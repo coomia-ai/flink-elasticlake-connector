@@ -1,0 +1,11 @@
+Flink ElasticLake Connector
+Copyright 2026 The Flink ElasticLake Connector Authors
+
+This product includes software developed by its contributors and is licensed
+under the Apache License, Version 2.0.
+
+The Gradle Wrapper is distributed under the Apache License, Version 2.0.
+Gradle: https://gradle.org/
+
+Apache Flink is a trademark of The Apache Software Foundation.
+This project is independent and is not an Apache Software Foundation project.

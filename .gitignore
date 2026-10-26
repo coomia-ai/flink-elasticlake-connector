@@ -1,0 +1,27 @@
+.gradle/
+**/build/
+artifacts/
+out/
+*.class
+*.log
+*.hprof
+.jqwik-database
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+
+# The wrapper is the only bootstrap JAR kept in source control.
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
