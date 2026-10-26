@@ -68,5 +68,6 @@ SPEC 章节。行为测试采用 JUnit 5；核心结构采用 jqwik 并与独立
 fake 不能证明真实 checkpoint 路由、SDK 完整性、S3 语义或服务恢复。请阅读
 [AGENTS.md](../AGENTS.md)与[贡献指南](../CONTRIBUTING.zh-CN.md)。
 
-已准备 GitHub Linux/Windows、JDK 17/21 CI；只有推送仓库并实际执行工作流后才有
-托管 CI 结果。公开托管、分支保护及私密安全报告属于平台侧配置。
+CI 覆盖 Linux/Windows、JDK 17/21；推送后实际执行结果见
+[GitHub Actions](https://github.com/coomia-ai/flink-elasticlake-connector/actions)。
+分支保护及私密安全报告需在托管平台单独配置。

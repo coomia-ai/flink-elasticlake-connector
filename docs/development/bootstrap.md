@@ -98,10 +98,24 @@ Upstream foundation acceptance still requires reviewed SDK candidate publication
 and SHA/metadata checks, the isolated logical API variant and acyclic task graph,
 shared Java 21 architecture-rule artifacts scanning nonempty Java 17 outputs,
 actual Java 17 consumers, and both independent builds. Real Flink, S3, controller,
-database, and performance gates remain separate. No hosted repository, remote
-publishing destination, release tag, or security contact is configured by this task.
+database, and performance gates remain separate. Code hosting targets the
+[GitHub repository](https://github.com/coomia-ai/flink-elasticlake-connector).
+Artifact publishing, release tags, and dedicated security contacts remain unconfigured.
 
 上游基础验收仍需经评审的 SDK 候选发布及 SHA/元数据核验、隔离逻辑 API 变体和
 无环任务图、Java 21 共享规则制品对非空 Java 17 输出的扫描、真实 Java 17 消费者及
-两个独立工程构建。真实 Flink、S3、控制面、数据库及性能门分别保留。本次不配置远端
-托管、发布目标、release tag 或安全联系方式。
+两个独立工程构建。真实 Flink、S3、控制面、数据库及性能门分别保留。源码托管使用
+上述 GitHub 仓库；制品发布目标、release tag 及专用安全联系方式尚未配置。
+
+## GitHub Initialization / GitHub 初始化
+
+The user supplied the repository URL and authorized the initial commit and push.
+The remote was empty; the initial branch is `main`. Commit `d9f0d7c` contains 47
+validated source/configuration files, with no encrypted source JARs or build outputs.
+All four Linux/Windows x Java 17/21 jobs passed in the
+[first CI run](https://github.com/coomia-ai/flink-elasticlake-connector/actions/runs/40313763168).
+This is scaffold build evidence, not SDK/Sink/runtime or release acceptance.
+/ 用户提供仓库地址并授权初始提交及推送；远端原为空，初始分支为 `main`。
+`d9f0d7c` 包含 47 个经核验的源码及配置文件，没有加密源码包或构建产物。
+首次 CI 的 Linux/Windows x Java 17/21 四种组合均通过；这仅是骨架构建实证，
+不代表 SDK、Sink、runtime 或发布验收通过。

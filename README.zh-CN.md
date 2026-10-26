@@ -2,6 +2,8 @@
 
 [English](README.md) | 简体中文
 
+[![CI](https://github.com/coomia-ai/flink-elasticlake-connector/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coomia-ai/flink-elasticlake-connector/actions/workflows/ci.yml)
+
 面向多模态湖仓数据库 [ElasticLake](https://gitee.com/spancer/elasticlake) 的独立
 Apache Flink 连接器项目，用于流式数据写入。
 
@@ -31,6 +33,11 @@ Flink 数据源 -> 业务转换 -> ElasticLake Sink
 
 安装 JDK 17 或 21 并配置 `JAVA_HOME`。生产字节码目标为 Java 17。Wrapper 使用
 Gradle 8.12，首次构建需访问 Gradle 分发站点、Gradle Plugin Portal 和 Maven Central。
+
+```bash
+git clone https://github.com/coomia-ai/flink-elasticlake-connector.git
+cd flink-elasticlake-connector
+```
 
 Linux / macOS：
 
@@ -78,8 +85,9 @@ Windows PowerShell：
 - [贡献指南](CONTRIBUTING.zh-CN.md)、[社区行为规范](CODE_OF_CONDUCT.zh-CN.md)、[安全政策](SECURITY.zh-CN.md)
 - [初始化范围与设计来源](docs/development/bootstrap.md)
 
-普通缺陷及建议通过托管仓库的 issue 跟踪；安全问题请私密报告。公开上线前还需配置
-仓库托管、制品发布及维护者联系方式。
+源码托管于 [GitHub](https://github.com/coomia-ai/flink-elasticlake-connector)，普通缺陷
+及建议通过 [Issue](https://github.com/coomia-ai/flink-elasticlake-connector/issues) 跟踪。
+安全问题请私密报告；首次发布前还需配置制品发布及可验证的维护者联系方式。
 
 ## 许可证
 

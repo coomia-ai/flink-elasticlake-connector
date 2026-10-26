@@ -75,6 +75,7 @@ JUnit 5; core structures need jqwik tests against an independent naive oracle.
 Fakes cannot certify real checkpoint routing, SDK integrity, S3 semantics, or service
 recovery. Read [AGENTS.md](../AGENTS.md) and [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-CI is prepared for GitHub on Linux/Windows with JDK 17/21. Hosted CI results only exist
-after the repository is pushed and workflows execute. Public hosting, branch
-protection, and private security reporting are external setup steps.
+CI runs on Linux/Windows with JDK 17/21. See the
+[GitHub Actions runs](https://github.com/coomia-ai/flink-elasticlake-connector/actions)
+for actual hosted results after pushing. Branch protection and private security
+reporting are separate hosting settings.

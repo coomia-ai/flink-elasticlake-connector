@@ -5,9 +5,9 @@ English | [简体中文](releasing.zh-CN.md)
 There is no release or remote publishing task yet. Do not distribute the scaffold
 JARs as a functional connector. Before the first release:
 
-1. Configure public repository URLs, verified maintainer/security contacts, branch
-   protection, and a controlled artifact repository. Update documentation and future
-   publication metadata with real URLs; do not invent coordinates or upload targets.
+1. Verify the [GitHub repository](https://github.com/coomia-ai/flink-elasticlake-connector)
+   URL and publication metadata. Configure verified maintainer/security contacts,
+   branch protection, and a controlled artifact repository; do not invent upload targets.
 2. Obtain the required API, state-format, recovery, and runtime approvals. Validate
    real SDK/server/Flink behavior and supported deployment profiles independently.
 3. Build from a clean source baseline with the wrapper, reviewed version catalog,

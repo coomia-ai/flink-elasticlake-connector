@@ -2,6 +2,8 @@
 
 English | [简体中文](README.zh-CN.md)
 
+[![CI](https://github.com/coomia-ai/flink-elasticlake-connector/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/coomia-ai/flink-elasticlake-connector/actions/workflows/ci.yml)
+
 An independent Apache Flink connector project for writing streaming data to
 [ElasticLake](https://gitee.com/spancer/elasticlake), a multimodal lakehouse database.
 
@@ -35,6 +37,11 @@ One checkpoint does not imply atomic visibility across parts or tables.
 Install JDK 17 or 21 and set `JAVA_HOME`. Production bytecode targets Java 17.
 The wrapper downloads Gradle 8.12; the first build requires network access to
 Gradle distributions, the Gradle Plugin Portal, and Maven Central.
+
+```bash
+git clone https://github.com/coomia-ai/flink-elasticlake-connector.git
+cd flink-elasticlake-connector
+```
 
 Linux / macOS:
 
@@ -85,9 +92,10 @@ Source connectors, or production delivery semantics.
 - [Contributing](CONTRIBUTING.md), [community conduct](CODE_OF_CONDUCT.md), and [security](SECURITY.md)
 - [Initialization scope and design provenance](docs/development/bootstrap.md)
 
-Bug reports and proposals belong in the hosting repository's issue tracker.
-Use private reporting for security concerns. Repository hosting, release publishing,
-and maintainer contact details must be configured before public launch.
+Source is hosted on [GitHub](https://github.com/coomia-ai/flink-elasticlake-connector).
+Submit bug reports and proposals to the [issue tracker](https://github.com/coomia-ai/flink-elasticlake-connector/issues).
+Use private reporting for security concerns. Artifact publishing and verified
+maintainer contact details remain to be configured before the first release.
 
 ## License
 

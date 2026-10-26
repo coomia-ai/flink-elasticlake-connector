@@ -18,5 +18,6 @@ violations. Decisions should be proportionate and explained privately when possi
 Report incidents privately to a maintainer using a verified contact on the hosting
 profile. Do not post personal details in public issues. A maintainer involved in an
 incident must defer review to another maintainer when one is available. Reports
-are handled confidentially to the extent possible. Public hosting and a dedicated
-community contact have not yet been configured.
+are handled confidentially to the extent possible. The repository is hosted on
+[GitHub](https://github.com/coomia-ai/flink-elasticlake-connector); a dedicated
+community contact has not yet been configured.
