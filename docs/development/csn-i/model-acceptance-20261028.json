@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "status": "PURE_MODEL_IMPLEMENTATION_ACCEPTED_WITH_OPEN_I05_MERGE",
+  "scope": "Only exact run02 model implementation and its evidence under user authorization",
+  "runId": "i16-model-20261028-02",
+  "inputSha256": "c33d5b2c5d7539732bcbea91feb0cb03bbfc5f1e806a16e9dca88d5a5fc50775",
+  "archiveSha256": "af610f5690d034d7af3a4740de8f947d27c050d5c0c27563cd11e9768f2928e6",
+  "APIReceiptSha256": "c2d64552d2d42f68e1f7e1e75adc2f3f270dbdd43d2868c8feca1d60e30cf276",
+  "independentReviewer": "connector_foundation_review",
+  "remainingP0": 0,
+  "remainingP1": 0,
+  "I05Accepted": false,
+  "keyPreimageOrProfileGranted": false,
+  "fullI16MergeAccepted": false,
+  "fullFoundationAccepted": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false,
+  "releaseAuthorized": false
+}

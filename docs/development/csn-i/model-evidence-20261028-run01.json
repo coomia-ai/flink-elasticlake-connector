@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "scope": "I16-user-authorized-pure-model-implementation-only",
+  "status": "INDEPENDENT_DELIVERY_REVIEW_PENDING",
+  "acceptedAPI": {
+    "receipt": "api-publication/acceptance.json",
+    "receiptSha256": "c2d64552d2d42f68e1f7e1e75adc2f3f270dbdd43d2868c8feca1d60e30cf276",
+    "manifestSha256": "48d75c4830b18eead2eca3c08980f87c6dde5889e9ab8631c892ede47c03b9f2",
+    "jarSha256": "1cbb28e353289b277a6acc609c44e42498760fa1e6b318387d45b32992b3226e",
+    "compiledAPIClassesIdentical": 48
+  },
+  "execution": {
+    "runId": "i16-model-20261028-01",
+    "gradle": "8.12",
+    "tasksExecuted": 22,
+    "seconds": 32,
+    "sourceInputs": 51,
+    "dependencyRecords": 104,
+    "archiveFiles": 91,
+    "ordinaryJava17Tests": 193,
+    "architectureJava21Rules": 22,
+    "modelSpecificJUnitAndPropertyTests": 16,
+    "modelPropertyChecks": 2000,
+    "APIPropertyChecks": 600,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "testInputsCapturedBeforeExecution": true,
+    "classBytesUnchangedDuringAndAfterTests": true,
+    "sourceDependenciesCompilersAndPinsUnchanged": true,
+    "mainModelClasses": 15,
+    "APIClasses": 48,
+    "testClasses": 16,
+    "architectureClasses": 1,
+    "taskGraphNodes": 32
+  },
+  "oracles": [
+    "hand-readable fixed frame and separate DataOutputStream encoder with independent random32-byte coverage",
+    "scalar journal/counter oracle",
+    "naive inventory ArrayList oracle",
+    "unbounded BigInteger budget arithmetic oracle"
+  ],
+  "findings": [
+    {
+      "id": "I16-R1",
+      "scope": "bootstrap inventory and registration/genesis binding",
+      "status": "FIXED_FINAL_REVIEW_PENDING",
+      "oldModelJarSha256": "6f876b5e322069fae8b789d110d78293c916edffa42699ba5c6e5a24355dfe99",
+      "oldInvalidAcceptances": 3,
+      "newRejections": 3,
+      "bootstrapInventoryCombinations": 32
+    },
+    {
+      "id": "I16-R2",
+      "scope": "coverage identity property-test blind spot",
+      "status": "FIXED_FINAL_REVIEW_PENDING",
+      "randomCoverageBytes": 32,
+      "explicitBoundaries": [
+        "all-zero",
+        "all-ff"
+      ],
+      "coverageFlipChangesFrame": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-01\\inputs.json",
+      "sha256": "7384badf4496763767042554adbc9c5dd449235ebd1c65a17f33771a399cdfd1"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-01\\archive.json",
+      "sha256": "975ca721ed7e807b8b4b35ddf1f43ac6f181b54fd9008d00bea53c14d825ead2"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-01\\test-class-inputs.json",
+      "sha256": "1edcb8648def8ec6c8e32a52f24e787d10af9077f4ec9c0159580c5d3fa189fd"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-01\\architectureTest-class-inputs.json",
+      "sha256": "b4185c4a344620f1f422a1f9965d1a1fe895aae4b727aa680ed5403eab4696bf"
+    },
+    {
+      "path": "build/i16-final01.log",
+      "sha256": "876eca6d80a27ddee4d9d2656ba6336f6d19701bc865675102f56e37d9bc2534"
+    },
+    {
+      "path": "build/i16-bootstrap-red/regression.log",
+      "sha256": "53614b5cc1004395fdeb0e8ab0fb9e06c5c4fdd4d5c3508b4a4b36ff79a78017"
+    },
+    {
+      "path": "build/i16-bootstrap-red/java-version.log",
+      "sha256": "6847e3efdd9d37ead2830843ace2164126149bbba1909ede7aa2aaf0f4aaeaac"
+    },
+    {
+      "path": "build/i16-bootstrap-red/BootstrapRegression.java",
+      "sha256": "6ca62d12a3ff62301127c570cbe21bff3cd41906d904a2a5a25d98a393ffb765"
+    },
+    {
+      "path": "build/i16-first-model-jar/original-model.jar",
+      "sha256": "6f876b5e322069fae8b789d110d78293c916edffa42699ba5c6e5a24355dfe99"
+    }
+  ],
+  "mergeI05Accepted": false,
+  "keyPreimageDefined": false,
+  "keyDerivedByProduct": false,
+  "sourceProfileRegistered": false,
+  "fullFoundationAccepted": false,
+  "fullI16MergeAccepted": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false,
+  "releaseAuthorized": false
+}

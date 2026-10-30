@@ -1,0 +1,4 @@
+gradle.settingsEvaluated { settings ->
+    settings.dependencyResolutionManagement.repositories.mavenLocal()
+    println('CONTROL_PRIVATE_MAVEN_LOCAL_FALLBACK_ATTEMPTED')
+}

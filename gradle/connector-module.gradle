@@ -1,0 +1,216 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
+
+if (rootProject.connectorFoundationProbe) {
+    dependencyLocking {
+        lockFile = rootProject.layout.projectDirectory.file("gradle/locks/${project.name}-foundation-probe.lockfile")
+    }
+}
+
+if (rootProject.connectorFoundationEnabled) {
+    java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+    tasks.withType(Test).configureEach {
+        javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }
+    }
+    if (rootProject.connectorFoundationProbe) {
+        def runId = providers.gradleProperty('foundationRunId').orElse('default').get()
+        if (!(runId ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('Invalid foundationRunId')
+        layout.buildDirectory = rootProject.layout.buildDirectory.dir("foundation-probe/${runId}/${project.name}")
+        sourceSets.main.java.setSrcDirs([rootProject.file("build-support/probes/${project.name}/main")])
+        sourceSets.test.java.setSrcDirs([rootProject.file("build-support/probes/${project.name}/test")])
+    }
+    tasks.register('verifyConnectorIsolation') {
+        dependsOn(rootProject.tasks.named('verifySdkCandidate'))
+        doLast {
+            ['compileClasspath', 'runtimeClasspath', 'testCompileClasspath', 'testRuntimeClasspath'].each { name ->
+                rootProject.verifyFoundationResolved(project, configurations.getByName(name), false)
+            }
+        }
+    }
+    tasks.named('compileJava') { dependsOn('verifyConnectorIsolation') }
+    tasks.named('compileTestJava') { dependsOn('verifyConnectorIsolation') }
+    tasks.named('check') { dependsOn('verifyConnectorIsolation', 'verifyConnectorBytecode') }
+    tasks.named('check') { dependsOn('verifyConnectorPackaging') }
+    tasks.named('check') { dependsOn('verifyConnectorDependencyBytes') }
+}
+
+def dependencyInputs = { boolean includeProjects = false, boolean includePaths = false ->
+    def names = ['compileClasspath', 'runtimeClasspath', 'testCompileClasspath', 'testRuntimeClasspath',
+        'architectureTestCompileClasspath', 'architectureTestRuntimeClasspath']
+    if (sourceSets.findByName('connectorApi') != null) names += ['connectorApiCompileClasspath', 'connectorApiRuntimeClasspath']
+    names.collectMany { name ->
+        def configuration = configurations.getByName(name)
+        rootProject.verifyFoundationResolved(project, configuration, name.startsWith('architectureTest'))
+        configuration.resolvedConfiguration.resolvedArtifacts.findAll {
+            includeProjects || !(it.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ProjectComponentIdentifier)
+        }.collect { artifact ->
+            def entry = [configuration: name, group: artifact.moduleVersion.id.group, module: artifact.moduleVersion.id.name,
+             version: artifact.moduleVersion.id.version, file: artifact.file.name, length: artifact.file.length(),
+             sha256: rootProject.candidateSha256(artifact.file)]
+            if (includePaths) {
+                entry.resolvedPath = artifact.file.absolutePath
+                entry.componentType = artifact.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ProjectComponentIdentifier ? 'project' : 'module'
+            }
+            entry
+        }
+    }.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+}
+def baselineFile = rootProject.file("build-support/dependency-baseline-${project.name}.json")
+tasks.register('recordConnectorDependencyBaseline') {
+    dependsOn(rootProject.tasks.named('verifySdkCandidate'), rootProject.tasks.named('verifyRulesCandidate'))
+    doLast {
+        if (!rootProject.connectorFoundationProbe) throw new GradleException('Dependency baseline preparation requires an explicit non-product probe')
+        if (baselineFile.exists()) throw new GradleException('Dependency byte baseline exists; changes require review')
+        baselineFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([schemaVersion: 1, project: project.path, artifacts: dependencyInputs()])) + '\n'
+    }
+}
+tasks.register('verifyConnectorDependencyBytes') {
+    dependsOn(rootProject.tasks.named('verifySdkCandidate'), rootProject.tasks.named('verifyRulesCandidate'))
+    doLast {
+        if (!baselineFile.file) throw new GradleException("Missing Connector dependency byte baseline: ${project.path}")
+        def baseline = new JsonSlurper().parse(baselineFile)
+        if (baseline.schemaVersion != 1 || baseline.project != project.path ||
+            rootProject.candidateValueSha256(baseline.artifacts) != rootProject.candidateValueSha256(dependencyInputs())) {
+            throw new GradleException("Connector dependencies differ from byte baseline: ${project.path}")
+        }
+    }
+}
+
+if (providers.gradleProperty('candidateId').present) {
+    def captured = {
+        new File(rootProject.foundationCandidateDirectory(), "dependencies/${project.name}.json")
+    }
+    def captureDependencies = tasks.register('captureConnectorFoundationDependencies') {
+        dependsOn(rootProject.tasks.named('captureConnectorFoundationInputs'))
+        if (project.name == 'connector-recovery-s3') dependsOn(':flink-connector:connectorApiJar')
+        doLast {
+            def target = captured()
+            if (target.exists()) throw new GradleException('Module dependency capture already exists')
+            target.parentFile.mkdirs()
+            target.text = JsonOutput.toJson([project: project.path,
+                sdkManifestSha256: providers.gradleProperty('sdkManifestSha256').get(),
+                rulesManifestSha256: providers.gradleProperty('rulesManifestSha256').get(),
+                artifacts: dependencyInputs(true, true)])
+        }
+    }
+    tasks.register('verifyConnectorFoundationDependencies') {
+        dependsOn('check', 'publishConnectorPublicationToFoundationRepository')
+        doLast {
+            def original = new JsonSlurper().parse(captured())
+            if (rootProject.candidateValueSha256(original.artifacts) != rootProject.candidateValueSha256(dependencyInputs(true, true))) {
+                throw new GradleException("Actual dependency bytes changed after capture: ${project.path}")
+            }
+        }
+    }
+    tasks.register('preserveConnectorFoundationEvidence') {
+        dependsOn('verifyConnectorFoundationDependencies')
+        doLast {
+            def target = new File(rootProject.foundationCandidateDirectory(), "evidence/${project.name}")
+            if (target.exists()) throw new GradleException('Candidate module evidence exists; never overwrite')
+            target.mkdirs()
+            def factory = DocumentBuilderFactory.newInstance()
+            factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+            def testResults = ['test', 'architectureTest'].collect { name ->
+                def task = tasks.named(name, Test).get()
+                def reports = fileTree(task.reports.junitXml.outputLocation.get()).matching { include 'TEST-*.xml' }.files
+                if (reports.empty) throw new GradleException("Missing original XML evidence: ${project.path}:${name}")
+                def totals = [tests: 0, failures: 0, errors: 0, skipped: 0]
+                reports.each { report ->
+                    def suite = factory.newDocumentBuilder().parse(report).documentElement
+                    totals.keySet().each { field -> totals[field] += Integer.parseInt(suite.getAttribute(field)) }
+                }
+                if (totals.tests == 0 || totals.failures != 0 || totals.errors != 0 || totals.skipped != 0) {
+                    throw new GradleException("Incomplete/failed original test evidence: ${project.path}:${name}:${totals}")
+                }
+                copy { from reports; into new File(target, "test-xml/${name}") }
+                [task: task.path, java: task.javaLauncher.get().metadata.languageVersion.asInt(), totals: totals]
+            }
+            def classSets = sourceSets.findAll { it.name in ['main', 'test', 'connectorApi', 'architectureTest'] }.collect { source ->
+                def records = source.output.classesDirs.files.collectMany { directory ->
+                    fileTree(directory).matching { include '**/*.class' }.files.collect { compiled ->
+                        [path: directory.toPath().relativize(compiled.toPath()).toString().replace('\\', '/'),
+                         length: compiled.length(), sha256: rootProject.candidateSha256(compiled)]
+                    }
+                }.sort { a, b -> a.path <=> b.path }
+                if (records.empty) throw new GradleException("Empty compiled evidence: ${project.path}:${source.name}")
+                source.output.classesDirs.files.each { directory ->
+                    copy { from directory; include '**/*.class'; into new File(target, "classes/${source.name}") }
+                }
+                def compiler = tasks.named(source.compileJavaTaskName, JavaCompile).get().javaCompiler.get()
+                [sourceSet: source.name, compilerJava: compiler.metadata.languageVersion.asInt(),
+                 compiler: compiler.executablePath.asFile.absolutePath, classes: records]
+            }
+            def scan = layout.buildDirectory.file('reports/architecture-inputs.json').get().asFile
+            if (!scan.file) throw new GradleException('Missing architecture scan input evidence')
+            copy { from scan; into target }
+            new File(target, 'summary.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                project: project.path, tests: testResults, outputs: classSets])) + '\n'
+        }
+    }
+    tasks.withType(JavaCompile).configureEach { dependsOn(captureDependencies) }
+}
+
+tasks.register('verifyConnectorBytecode') {
+    dependsOn('classes')
+    doLast {
+        def sets = [main: sourceSets.main]
+        if (sourceSets.findByName('connectorApi') != null) sets.connectorApi = sourceSets.connectorApi
+        sets.each { name, source ->
+            def classes = source.output.classesDirs.asFileTree.matching { include '**/*.class'; exclude '**/package-info.class' }.files
+            if (classes.empty) throw new GradleException("${path}: no ${name} classes; no foundation/product acceptance")
+            classes.each { compiled ->
+                byte[] bytes = compiled.bytes
+                def major = ((bytes[6] & 255) << 8) | (bytes[7] & 255)
+                if (major != 61) throw new GradleException("${compiled}: expected Java17 major61, got ${major}")
+            }
+        }
+    }
+}
+
+tasks.register('foundationTestsJar', Jar) {
+    archiveClassifier = 'tests'
+    from sourceSets.test.output
+    dependsOn('testClasses')
+}
+
+tasks.register('verifyConnectorPackaging') {
+    dependsOn('jar')
+    if (project.name == 'flink-connector') dependsOn('connectorApiJar')
+    doLast {
+        def outputs = [sourceSets.main.output.classesDirs]
+        if (sourceSets.findByName('connectorApi') != null) outputs.add(sourceSets.connectorApi.output.classesDirs)
+        def expected = outputs.collectMany { directories ->
+            directories.files.collectMany { directory ->
+                fileTree(directory).matching { include '**/*.class' }.files.collect {
+                    directory.toPath().relativize(it.toPath()).toString().replace('\\', '/')
+                }
+            }
+        }.toSet()
+        if (expected.empty) throw new GradleException("${path}: empty packaged classes")
+        new ZipFile(tasks.named('jar', Jar).get().archiveFile.get().asFile).withCloseable { archive ->
+            def actual = archive.entries().findAll { it.name.endsWith('.class') }.collect { it.name }.toSet()
+            if (expected != actual) throw new GradleException("${path}: JAR classes differ from own source outputs")
+            if (archive.getEntry('META-INF/LICENSE') == null || archive.getEntry('META-INF/NOTICE') == null) {
+                throw new GradleException("${path}: missing LICENSE/NOTICE")
+            }
+            if (project.name == 'flink-connector') {
+                new ZipFile(tasks.named('connectorApiJar', Jar).get().archiveFile.get().asFile).withCloseable { logical ->
+                    def entries = logical.entries().findAll { it.name.endsWith('.class') }
+                    if (entries.empty) throw new GradleException('Logical API JAR is empty')
+                    entries.each { entry ->
+                        if (!entry.name.startsWith('io/elasticlake/connector/api/v3/')) throw new GradleException("Logical API leaks implementation: ${entry.name}")
+                        byte[] apiBytes = logical.getInputStream(entry).withCloseable { it.readAllBytes() }
+                        byte[] mainBytes = archive.getInputStream(archive.getEntry(entry.name)).withCloseable { it.readAllBytes() }
+                        if (!java.util.Arrays.equals(apiBytes, mainBytes)) throw new GradleException("API class differs between variants: ${entry.name}")
+                    }
+                }
+            }
+        }
+    }
+}
+
+apply from: rootProject.file('gradle/connector-publishing.gradle')
+
+apply from: rootProject.file('gradle/connector-architecture.gradle')

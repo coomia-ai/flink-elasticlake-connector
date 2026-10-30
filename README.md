@@ -7,10 +7,19 @@ English | [简体中文](README.zh-CN.md)
 An independent Apache Flink connector project for writing streaming data to
 [ElasticLake](https://gitee.com/spancer/elasticlake), a multimodal lakehouse database.
 
-**Status: project scaffold, pre-alpha.** The build, module layout, and community
-documents are available. The Sink, SDK integration, serializers, and S3 recovery
-provider are not implemented. No connector artifact has been released, and this
-repository cannot yet run an ingestion job.
+**Status: logical API and pure models, pre-alpha.** The Flink-independent v3 API
+has real constructor and immutability tests and an isolated publication/consumer
+path. See the [API delivery record](docs/development/csn-i/I-07-CONNECTOR.md).
+Generation, epoch identity, pending-manager and budget models have their own
+[validation record](docs/development/csn-i/I-16.md). Independent epoch/key goldens
+are now consumed by the pure models, including original opaque-identity checks;
+full fixture and registered-profile integration remains pending.
+The production Sink, SDK HTTP integration, serializers and S3 recovery provider
+are pending. No connector artifact has been released; ingestion jobs are not yet supported.
+
+Current source publication and artifact/CI prerequisites are recorded in the
+[source delivery note](docs/development/csn-i/SOURCE-DELIVERY-20261030.md). The
+existing hosted workflow lacks sealed inputs and is not yet a passing build gate.
 
 ## Design Direction
 
@@ -34,7 +43,7 @@ One checkpoint does not imply atomic visibility across parts or tables.
 
 ## Build
 
-Install JDK 17 or 21 and set `JAVA_HOME`. Production bytecode targets Java 17.
+Install JDK 17 and set `JAVA_HOME`; architecture tests also require JDK 21. Production bytecode targets Java 17.
 The wrapper downloads Gradle 8.12; the first build requires network access to
 Gradle distributions, the Gradle Plugin Portal, and Maven Central.
 
@@ -46,24 +55,30 @@ cd flink-elasticlake-connector
 Linux / macOS:
 
 ```bash
-bash ./gradlew build
+bash ./gradlew :flink-connector:compileConnectorApiJava \
+  -PsdkRepository=<sealed-sdk-repository> \
+  -PsdkManifest=<sdk-candidate.json> -PsdkManifestSha256=<trusted-sha>
 ```
 
 Windows PowerShell:
 
 ```powershell
-.\gradlew.bat build
+.\gradlew.bat :flink-connector:compileConnectorApiJava `
+  -PsdkRepository=<sealed-sdk-repository> `
+  -PsdkManifest=<sdk-candidate.json> -PsdkManifestSha256=<trusted-sha>
 ```
 
-A successful scaffold build checks the build configuration, formatting, and
-packaging. There are currently no runtime tests; `test` tasks report `NO-SOURCE`.
-The generated JARs contain no usable connector implementation.
+SDK paths and trusted SHA are mandatory once API sources are present. Compilation
+does not require SDK source or HTTP code. Tests and API candidate sealing also use
+the explicit shared-rules repository described in the API delivery record. A full
+Connector build/install is pending; the existing scaffold CI is not evidence for
+the new API path. Foundation probes remain separate non-product fixtures.
 
 ## Modules
 
 | Directory | Intended artifact | Responsibility | Status |
 | --- | --- | --- | --- |
-| `flink-connector` | `io.elasticlake:elasticlake-flink-connector-1.20` | Flink Sink, checkpoint assembly, commit and recovery integration | Scaffold |
+| `flink-connector` | `io.elasticlake:elasticlake-flink-connector-1.20` | Logical API; planned Sink, assembly, commit and recovery integration | API implementation; runtime pending |
 | `connector-recovery-s3` | `io.elasticlake:elasticlake-connector-recovery-s3` | Optional persistent recovery store | Scaffold |
 
 The coordinates above are reserved design names, not published dependencies.
@@ -77,7 +92,7 @@ module currently has no provider dependency or implementation.
 | Java | 17 | Production bytecode target; Java 17 execution must be validated for release |
 | Apache Flink | 1.20.3 | SPEC target; runtime, topology, and rescaling tests are pending |
 | Gradle | 8.12 | Independent wrapper and version catalog |
-| ElasticLake SDK / server | Not integrated | Exact SDK version and SHA-256 manifest required before integration |
+| ElasticLake SDK / server | SDK API build integration | Explicit sealed repository and trusted manifest SHA required; HTTP/server behavior pending |
 
 These targets do not claim support for other Flink lines, SQL/Table factories,
 Source connectors, or production delivery semantics.
@@ -91,6 +106,7 @@ Source connectors, or production delivery semantics.
 - [Release checklist](docs/releasing.md)
 - [Contributing](CONTRIBUTING.md), [community conduct](CODE_OF_CONDUCT.md), and [security](SECURITY.md)
 - [Initialization scope and design provenance](docs/development/bootstrap.md)
+- [SDK artifact and Connector build foundation](docs/development/csn-i/I-06.md)
 
 Source is hosted on [GitHub](https://github.com/coomia-ai/flink-elasticlake-connector).
 Submit bug reports and proposals to the [issue tracker](https://github.com/coomia-ai/flink-elasticlake-connector/issues).

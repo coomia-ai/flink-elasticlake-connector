@@ -1,0 +1,11 @@
+gradle.afterProject { project ->
+    if (project == project.rootProject) {
+        project.tasks.named('captureConnectorFoundationInputs').configure {
+            doLast {
+                // Use only a deliberately copied SDK candidate when running this control.
+                def manifest = project.file(project.providers.gradleProperty('sdkManifest').get())
+                manifest.append(' ')
+            }
+        }
+    }
+}

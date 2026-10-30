@@ -1,0 +1,11 @@
+gradle.afterProject { project ->
+    if (project.path == ':flink-connector') {
+        def rules = project.rootProject.loadFoundationCandidate('rules', 'architecture-rules')
+        def jars = rules.data.files.findAll { it.path.endsWith('.jar') }
+        if (jars.size() != 1) throw new GradleException('Expected one sealed shared-rules JAR for packaging contamination control')
+        def rulesJar = new File(rules.repository, jars.first().path)
+        project.tasks.named('jar', Jar).configure {
+            from(project.zipTree(rulesJar)) { include 'io/elasticlake/arch/rules/**/*.class' }
+        }
+    }
+}

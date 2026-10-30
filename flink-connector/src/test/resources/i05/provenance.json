@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "scope": "independent-epoch-C-subset",
+  "generatedBy": "oracle.py, Python 3.12.14 standard library",
+  "importsProductionCode": false,
+  "inputs": [
+    {
+      "path": "docs/specs/SPEC-26-flink-sink-connector-v05.md",
+      "length": 16347,
+      "sha256": "7e8ae7a21084d606a277fb89d2b02b6eb7c6d28e2805e0a261be3fa9e28f3673"
+    },
+    {
+      "path": "docs/specs/SPEC-26-flink-sink-connector.md",
+      "length": 22179,
+      "sha256": "ae6e65e1d04c45d2d35bb695a3731f2e571b0a261fff5b7220595cef36dda106"
+    },
+    {
+      "path": "docs/specs/SPEC-22-delivery-digest-v05-candidate.md",
+      "length": 14886,
+      "sha256": "bbc687a036f3adedc553de3ce08de57edc475906c7f7e4862ba17bbc14bb4151"
+    },
+    {
+      "path": "docs/specs/SPEC-22-projection-write-contract.md",
+      "length": 67950,
+      "sha256": "0c758d0e5b748e20b884b02e7d34417252cd27776ab572f0132c605762a685b6"
+    },
+    {
+      "path": "docs/specs/CSN-I-PUBLIC-CONTRACT-v3.md",
+      "length": 11548,
+      "sha256": "0b59d2f4f76865781dd60089d7b15206595a32ae0e0444bf8df3a2c65dc1f41c"
+    },
+    {
+      "path": "docs/specs/CSN-I-PUBLIC-CONTRACT-v2.md",
+      "length": 19782,
+      "sha256": "1a131dd8ff6dd083d6594dcaf8e16655c326a74464092d1359df390171826685"
+    },
+    {
+      "path": "simulation/src/test/java/io/elasticlake/simulation/write/RequestDigestModelTest.java",
+      "length": 4661,
+      "sha256": "2bfb0c3f7b916acb641fd9b2168377763a0ae77cfb92bc3983da2b117bc1c267"
+    }
+  ],
+  "taskAssignment": {
+    "path": "build/csn-i-sdk/i05-frame-input-20261028-01/assignment.json",
+    "sha256": "d51f780c8f1500e9e937ddbcdae933a13bd0afc9dc542804d74e902a4e66ca6d",
+    "initialValidation": "PASS schema-v3 I-05"
+  },
+  "legacyDigest": "sha256-v1:1fe27e37cb5978a908c4ccbba9961f31b46d6b578be345c7f03bc4caccb5e1f9",
+  "counts": {
+    "validEpochs": 12,
+    "oracleRejects": 12,
+    "contexts": 12,
+    "legacy": 1,
+    "modelRejectionsRepresentableByJavaLong": 10,
+    "overflowCasesOracleOnly": 2
+  },
+  "completeI05Accepted": false,
+  "canonicalFrameGateGranted": false,
+  "keyDerivationSpecified": false,
+  "profileRegistered": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false
+}

@@ -1,0 +1,19 @@
+import groovy.json.JsonSlurper
+
+gradle.afterProject { project ->
+    if (project.path == ':connector-recovery-s3') {
+        project.tasks.named('verifyConnectorFoundationDependencies').configure {
+            doFirst {
+                def snapshot = new JsonSlurper().parse(new File(project.rootProject.foundationCandidateDirectory(), 'dependencies/connector-recovery-s3.json'))
+                def artifact = snapshot.artifacts.find { it.componentType == 'project' && it.file.endsWith('-logical-api.jar') }
+                if (artifact == null) throw new GradleException('Missing private logical API dependency in drift control')
+                // This is this run's private generated JAR, never a shared Gradle cache artifact.
+                def target = new File(artifact.resolvedPath)
+                if (!target.toPath().toAbsolutePath().normalize().startsWith(project.rootProject.layout.buildDirectory.get().asFile.toPath().toAbsolutePath().normalize())) {
+                    throw new GradleException('Dependency drift control refuses to mutate anything outside the private build directory')
+                }
+                target.append('deliberate-private-dependency-drift')
+            }
+        }
+    }
+}

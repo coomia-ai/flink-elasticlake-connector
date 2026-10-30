@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "scope": "I16-user-authorized-pure-model-implementation-only",
+  "status": "EXACT_RUN02_PURE_MODEL_IMPLEMENTATION_INDEPENDENT_REVIEW_PASSED",
+  "acceptedAPI": {
+    "receipt": "api-publication/acceptance.json",
+    "receiptSha256": "c2d64552d2d42f68e1f7e1e75adc2f3f270dbdd43d2868c8feca1d60e30cf276",
+    "manifestSha256": "48d75c4830b18eead2eca3c08980f87c6dde5889e9ab8631c892ede47c03b9f2",
+    "jarSha256": "1cbb28e353289b277a6acc609c44e42498760fa1e6b318387d45b32992b3226e",
+    "compiledAPIClassesIdentical": 48
+  },
+  "execution": {
+    "runId": "i16-model-20261028-02",
+    "gradle": "8.12",
+    "tasksExecuted": 22,
+    "seconds": 94,
+    "sourceInputs": 51,
+    "dependencyRecords": 104,
+    "archiveFiles": 91,
+    "ordinaryJava17Tests": 193,
+    "architectureJava21Rules": 22,
+    "modelSpecificJUnitAndPropertyTests": 16,
+    "modelPropertyChecks": 2000,
+    "APIPropertyChecks": 600,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "testInputsCapturedBeforeExecution": true,
+    "classBytesUnchangedDuringAndAfterTests": true,
+    "sourceDependenciesCompilersAndPinsUnchanged": true,
+    "mainModelClasses": 15,
+    "APIClasses": 48,
+    "testClasses": 16,
+    "architectureClasses": 1,
+    "taskGraphNodes": 32
+  },
+  "oracles": [
+    "hand-readable fixed frame and separate DataOutputStream encoder with independent random32-byte coverage",
+    "scalar journal/counter oracle",
+    "naive inventory ArrayList oracle",
+    "unbounded BigInteger budget arithmetic oracle"
+  ],
+  "findings": [
+    {
+      "id": "I16-R1",
+      "scope": "bootstrap inventory; genesis; generation/start/run and completed-point local consistency",
+      "status": "CLOSED_AFTER_INDEPENDENT_RE_REVIEW",
+      "oldModelJarSha256": "6f876b5e322069fae8b789d110d78293c916edffa42699ba5c6e5a24355dfe99",
+      "oldInvalidAcceptances": 10,
+      "newRejections": 10,
+      "bootstrapInventoryCombinations": 32
+    },
+    {
+      "id": "I16-R2",
+      "scope": "coverage identity property-test blind spot",
+      "status": "CLOSED_AFTER_INDEPENDENT_RE_REVIEW",
+      "randomCoverageBytes": 32,
+      "explicitBoundaries": [
+        "all-zero",
+        "all-ff"
+      ],
+      "coverageFlipChangesFrame": true
+    }
+  ],
+  "evidence": [
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-02\\inputs.json",
+      "sha256": "c33d5b2c5d7539732bcbea91feb0cb03bbfc5f1e806a16e9dca88d5a5fc50775"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-02\\archive.json",
+      "sha256": "af610f5690d034d7af3a4740de8f947d27c050d5c0c27563cd11e9768f2928e6"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-02\\test-class-inputs.json",
+      "sha256": "6d367078138f24f593d53eed71a9e3408bb8317066d1f2a68e5ea9942edb595f"
+    },
+    {
+      "path": "build\\model-evidence\\i16-model-20261028-02\\architectureTest-class-inputs.json",
+      "sha256": "d501d0e6c876136392d586c79b55fd4445795196c7fc0e1c2f7d2b988828fec8"
+    },
+    {
+      "path": "build/i16-final02.log",
+      "sha256": "8c7a7f99b8fc58fe1c6c19137135c5d919fe2b6ec2a011cd01ba007413a7f475"
+    },
+    {
+      "path": "build/i16-bootstrap-red02/regression.log",
+      "sha256": "16f7c586b78857b089ef3e43673b0c3eaeaff2bce13447ec61c6fde5139ddd82"
+    },
+    {
+      "path": "build/i16-bootstrap-red02/java-version.log",
+      "sha256": "6847e3efdd9d37ead2830843ace2164126149bbba1909ede7aa2aaf0f4aaeaac"
+    },
+    {
+      "path": "build/i16-bootstrap-red02/BootstrapRegression.java",
+      "sha256": "bfabd2a136b126cee6e8bd8498d9fdbeb932ae4196daea5b94568a0bb09f9bc8"
+    },
+    {
+      "path": "build/i16-first-model-jar/original-model.jar",
+      "sha256": "6f876b5e322069fae8b789d110d78293c916edffa42699ba5c6e5a24355dfe99"
+    }
+  ],
+  "mergeI05Accepted": false,
+  "keyPreimageDefined": false,
+  "keyDerivedByProduct": false,
+  "sourceProfileRegistered": false,
+  "fullFoundationAccepted": false,
+  "fullI16MergeAccepted": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false,
+  "releaseAuthorized": false,
+  "historicalSummary": "docs/development/csn-i/model-evidence-20261028-run01.json",
+  "run01Accepted": false,
+  "independentReview": {
+    "reviewer": "connector_foundation_review",
+    "userAuthorized": true,
+    "remainingP0": 0,
+    "remainingP1": 0,
+    "testsExecutedByReviewer": false,
+    "sourceDependencyArchiveAndAPIHashesMatched": true,
+    "ordinaryClassReceiptCount": 79,
+    "architectureClassReceiptCount": 64,
+    "pureModelImplementationAccepted": true,
+    "fullI16MergeAccepted": false
+  }
+}

@@ -1,0 +1,35 @@
+apply plugin: 'maven-publish'
+
+// Runtime candidates exclude source archives until the host's source-JAR qualification is closed.
+components.java.withVariantsFromConfiguration(configurations.sourcesElements) { skip() }
+publishing {
+    publications {
+        connector(MavenPublication) {
+            from components.java
+            artifactId = project.name == 'flink-connector' ? 'elasticlake-flink-connector-1.20' : 'elasticlake-connector-recovery-s3'
+        }
+    }
+    repositories {
+        maven {
+            name = 'foundation'
+            url = rootProject.layout.buildDirectory.dir("foundation-candidates/${providers.gradleProperty('candidateId').orElse('UNSET').get()}/repository")
+        }
+    }
+}
+tasks.withType(PublishToMavenRepository).configureEach {
+    if (!name.startsWith('publishConnectorPublication')) return
+    dependsOn(rootProject.tasks.named('prepareConnectorFoundationCandidate'))
+    dependsOn('verifyConnectorBytecode', 'verifyConnectorPackaging')
+    doFirst {
+        if (!rootProject.connectorFoundationProbe || repository.name != 'foundation') {
+            throw new GradleException('Only explicit non-product local foundation publication is configured')
+        }
+    }
+}
+tasks.withType(PublishToMavenLocal).configureEach {
+    doFirst { throw new GradleException('mavenLocal is forbidden; use an isolated sealed candidate') }
+}
+if (providers.gradleProperty('candidateId').present) {
+    tasks.withType(JavaCompile).configureEach { dependsOn(rootProject.tasks.named('captureConnectorFoundationInputs')) }
+    tasks.withType(ProcessResources).configureEach { dependsOn(rootProject.tasks.named('captureConnectorFoundationInputs')) }
+}

@@ -1,0 +1,6 @@
+if (rootProject.connectorFoundationEnabled) {
+    dependencies {
+        compileOnly project(path: ':flink-connector', configuration: 'connectorApiElements')
+        testImplementation project(path: ':flink-connector', configuration: 'connectorApiElements')
+    }
+}

@@ -7,8 +7,15 @@
 面向多模态湖仓数据库 [ElasticLake](https://gitee.com/spancer/elasticlake) 的独立
 Apache Flink 连接器项目，用于流式数据写入。
 
-**当前状态：工程骨架，pre-alpha。** 已提供构建配置、模块目录和社区文档；Sink、SDK
-接入、状态序列化和 S3 恢复实现尚未开发。当前没有发布连接器制品，也不能运行入库作业。
+**当前状态：逻辑 API 与纯模型，pre-alpha。** 已实现 Flink 无关的 v3 API、构造及不可变测试，
+并提供独立发布/消费者验证入口，详见 [API 交付记录](docs/development/csn-i/I-07-CONNECTOR.md)。生产 Sink、
+SDK HTTP 接入、状态序列化和 S3 恢复实现仍待完成。当前未发布连接器制品，尚不能运行入库作业。
+
+代际、epoch 身份、待回调槽位及预算模型的实证见 [模型交付记录](docs/development/csn-i/I-16.md)，
+已消费独立 epoch/key 黄金并检查原始 opaque 身份；完整夹具与 profile 合流资格仍待完成。
+
+当前源码提交范围及制品/CI 前置条件见[源码交付记录](docs/development/csn-i/SOURCE-DELIVERY-20261030.md)。
+现有远端工作流尚缺受信制品输入，不能作为已通过的构建门禁。
 
 ## 设计方向
 
@@ -31,7 +38,7 @@ Flink 数据源 -> 业务转换 -> ElasticLake Sink
 
 ## 构建
 
-安装 JDK 17 或 21 并配置 `JAVA_HOME`。生产字节码目标为 Java 17。Wrapper 使用
+安装 JDK 17 并配置 `JAVA_HOME`，架构测试另需 JDK 21。生产字节码目标为 Java 17。Wrapper 使用
 Gradle 8.12，首次构建需访问 Gradle 分发站点、Gradle Plugin Portal 和 Maven Central。
 
 ```bash
@@ -42,23 +49,31 @@ cd flink-elasticlake-connector
 Linux / macOS：
 
 ```bash
-bash ./gradlew build
+bash ./gradlew :flink-connector:compileConnectorApiJava \
+  -PsdkRepository=<sealed-sdk-repository> \
+  -PsdkManifest=<sdk-candidate.json> -PsdkManifestSha256=<trusted-sha>
 ```
 
 Windows PowerShell：
 
 ```powershell
-.\gradlew.bat build
+.\gradlew.bat :flink-connector:compileConnectorApiJava `
+  -PsdkRepository=<sealed-sdk-repository> `
+  -PsdkManifest=<sdk-candidate.json> -PsdkManifestSha256=<trusted-sha>
 ```
 
-骨架构建成功仅说明构建配置、格式检查和打包通过。当前没有 runtime 测试，`test`
-任务显示 `NO-SOURCE`；生成的 JAR 不包含可用的连接器实现。
+API 源码存在后必须显式提供 SDK 仓库、清单和受信 SHA；单独编译不需要 SDK 源码或 HTTP。
+测试及 API 封存另需显式共享规则制品，完整命令见交付记录。完整 Connector 构建/安装仍待完成，
+既有骨架 CI 不代表新 API 路径已通过。可选探针继续使用独立非产品源码。
+可选构建 fixture 使用独立源码目录、依赖锁和输出目录，其测试不证明 Sink 行为。
+前置条件、命令与证据见[双语构建基础记录](docs/development/csn-i/I-06.md)。
+生成的 JAR 不包含可用的连接器实现。
 
 ## 模块
 
 | 目录 | 规划制品坐标 | 职责 | 状态 |
 | --- | --- | --- | --- |
-| `flink-connector` | `io.elasticlake:elasticlake-flink-connector-1.20` | Flink Sink、checkpoint 装配、提交与恢复接入 | 骨架 |
+| `flink-connector` | `io.elasticlake:elasticlake-flink-connector-1.20` | 逻辑 API；后续 Sink、装配、提交与恢复接入 | API 已实现，运行待完成 |
 | `connector-recovery-s3` | `io.elasticlake:elasticlake-connector-recovery-s3` | 可选的持久化恢复存储 | 骨架 |
 
 以上是设计预留坐标，尚未发布。Flink 依赖为 `compileOnly`，由 Flink 集群提供。
@@ -71,7 +86,7 @@ Windows PowerShell：
 | Java | 17 | 生产字节码目标；发布前必须验证 Java 17 实际执行 |
 | Apache Flink | 1.20.3 | SPEC 目标版本；runtime、拓扑及重分片验证待完成 |
 | Gradle | 8.12 | 独立 Wrapper 和版本目录 |
-| ElasticLake SDK / 服务端 | 未接入 | 接入前须绑定精确 SDK 版本及 SHA-256 清单 |
+| ElasticLake SDK / 服务端 | SDK API 构建接入 | 必须显式提供封存仓库及受信清单 SHA；HTTP/服务端行为待验证 |
 
 这些目标不代表已支持其他 Flink 版本、SQL/Table 工厂、Source 连接器或生产交付语义。
 
@@ -84,6 +99,7 @@ Windows PowerShell：
 - [发布检查](docs/releasing.zh-CN.md)
 - [贡献指南](CONTRIBUTING.zh-CN.md)、[社区行为规范](CODE_OF_CONDUCT.zh-CN.md)、[安全政策](SECURITY.zh-CN.md)
 - [初始化范围与设计来源](docs/development/bootstrap.md)
+- [SDK 制品与 Connector 构建基础](docs/development/csn-i/I-06.md)
 
 源码托管于 [GitHub](https://github.com/coomia-ai/flink-elasticlake-connector)，普通缺陷
 及建议通过 [Issue](https://github.com/coomia-ai/flink-elasticlake-connector/issues) 跟踪。

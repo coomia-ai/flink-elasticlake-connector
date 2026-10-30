@@ -11,3 +11,6 @@ gradlew text eol=lf
 *.jar binary
 LICENSE text eol=lf
 NOTICE text eol=lf
+
+# Independent fixture pins bind every original byte across platforms.
+flink-connector/src/test/resources/i05/** -text

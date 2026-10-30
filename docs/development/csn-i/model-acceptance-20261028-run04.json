@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "status": "EXACT_RUN04_PURE_MODEL_IMPLEMENTATION_ACCEPTED_WITH_OPEN_I05_MERGE",
+  "scope": "run04-pure-models-and-independent-epoch-key-consumption-only",
+  "runId": "i16-model-20261028-04",
+  "inputSha256": "db014b15604a180dc5c84f87756bba92cf74459a06a073ef624915e46ccc19af",
+  "archiveSha256": "376ec3f679ae935fe4c09e27fcac2439c4842b3a7f6635a74d79beb350af4b91",
+  "APIReceiptSha256": "c2d64552d2d42f68e1f7e1e75adc2f3f270dbdd43d2868c8feca1d60e30cf276",
+  "independentReviewer": "connector_foundation_review",
+  "remainingP0": 0,
+  "remainingP1": 0,
+  "keyFramingImplementationAccepted": true,
+  "independentEpochAndKeyConsumptionAccepted": true,
+  "originalOpaqueTrustedSourceAccepted": false,
+  "fullI05Accepted": false,
+  "fullI16MergeAccepted": false,
+  "fullFoundationAccepted": false,
+  "profileAccepted": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false,
+  "releaseAuthorized": false
+}

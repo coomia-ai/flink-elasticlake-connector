@@ -1,0 +1,5 @@
+gradle.projectsEvaluated {
+    gradle.rootProject.project(':flink-connector').tasks.named('captureLogicalApiInputs') {
+        doLast { rootProject.file('gradlew').append('\n# private negative control\n') }
+    }
+}

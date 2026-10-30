@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "scope": "external-connector-non-product-engineering-review-supplement",
+  "status": "independent-review-passed-owner-acceptance-pending",
+  "candidate": {
+    "id": "i06-connector-foundation-20261028-04",
+    "revision": 2,
+    "manifestPath": "build/foundation-candidates/i06-connector-foundation-20261028-04/connector-candidate.json",
+    "manifestSha256": "34de4bda912a0c25bbf47ae3b88ba28ea843bc9dfcfc3150663ab4c0dc01384f",
+    "sourceInputs": 50,
+    "sourceInputsSha256": "18178fa7f8ef52d384d452aadcb9b32fd79ffde97f92069346d3ff58cbeb1a8c",
+    "dependencyRecords": 174,
+    "dependencyArtifactsSha256": "fcdf9e88c3b0858a6d694e8205eccf9125a55fcbfdb2ab991dfa43ea87213dd3",
+    "repositoryFiles": 45,
+    "evidenceFiles": 16,
+    "nonProductProbe": true,
+    "foundationAccepted": false,
+    "productAccepted": false
+  },
+  "trustedInputs": {
+    "sdkApiManifestSha256": "616d10fab067bb10b66f00d61e3de2aa64ed64d4f38619e5973bc6417132198a",
+    "sdkApiJarSha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11",
+    "rulesManifestSha256": "f95c9fa88ec481f3b361b0bb83e2f9faf8ebd7ea078f9ed2832304a3e52ca42f",
+    "unchangedBuildVerifierSha256": "b816ee1598f26c53bec9f5028d0939090ff4eaa5e06e7f2474559a0d18ed17d9"
+  },
+  "positive": {
+    "buildTasksExecuted": 57,
+    "buildSeconds": 57,
+    "originalXmlFiles": 4,
+    "ordinaryJava17Tests": 4,
+    "architectureJava21Rules": 44,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "archivedClasses": 7,
+    "taskGraphNodes": 84,
+    "taskGraphAcyclic": true,
+    "relocatedConsumerJava": "17.0.21.0.2+1-LTS",
+    "relocatedConsumerTasksExecuted": 3,
+    "relocatedConsumerSeconds": 19,
+    "privateMavenLocalAvailabilityVerified": true
+  },
+  "engineeringControls": {
+    "scope": "non-product-engineering-controls",
+    "privateMavenLocalAvailable": true,
+    "availabilityLogSha256": "9acb804c7c761ea45a68ac66798451ecd3dcfe35edc1ebb2db49a78727ab6b49",
+    "cases": [
+      {
+        "name": "missing-sdk-repository",
+        "rejected": true,
+        "exitCode": 1,
+        "matched": [
+          "Missing candidate repository/manifest"
+        ],
+        "logSha256": "a852d8b7d632ff61735ae308a0f48e6e0ceeba3351360948bfe63679a39826c8"
+      },
+      {
+        "name": "maven-local-fallback",
+        "rejected": true,
+        "exitCode": 1,
+        "matched": [
+          "Candidate inventory differs: missing="
+        ],
+        "logSha256": "7d851d05dda499eb1557c15dc43f09e687449c6810faa85f70b191938cca0abe"
+      },
+      {
+        "name": "rules-in-ordinary-tests",
+        "rejected": true,
+        "exitCode": 1,
+        "matched": [
+          "Architecture artifact leaked into"
+        ],
+        "logSha256": "0c773efb2a496c3cbea7dd59760d0e60ca5025e15fa79a356fab7c9c25158f2e"
+      },
+      {
+        "name": "rules-in-product-jar",
+        "rejected": true,
+        "exitCode": 1,
+        "matched": [
+          "JAR classes differ from own source outputs"
+        ],
+        "logSha256": "886f3efbdb3d5396c1a6cbfbe9d359c20d784ccc2ed98bbf058b3e9bdf480283"
+      }
+    ],
+    "productAccepted": false
+  },
+  "historicalEvidence": {
+    "summary": "foundation-evidence-20261027.json",
+    "candidate03NotResigned": true,
+    "metadata8AndCli5AndApiOnlyAndDriftControlsNotRerun": true
+  },
+  "independentReview": {
+    "agent": "connector_foundation_review",
+    "userAuthorizedReadOnly": true,
+    "remainingP0": 0,
+    "remainingP1": 0,
+    "scope": "engineering-design-and-non-product-foundation-mechanisms",
+    "candidate04AndRelocatedConsumerRehashed": true,
+    "testsExecutedByReviewer": false,
+    "ownerApprovalGranted": false
+  },
+  "rawEvidence": [
+    {
+      "path": "build/foundation-final04-owner-20261028.log",
+      "sha256": "5293587a9a3f6cbf743f199310582324cc455679d18abb413a0fc41f0fe8f3ef"
+    },
+    {
+      "path": "build/foundation-relocated-consumer-v4.log",
+      "sha256": "3d8dd92d545aed5d091d3c850df6b9d58a564d0e8ba16d656b74e681979c13e0"
+    },
+    {
+      "path": "build/foundation-engineering-controls/owner-review01/results.json",
+      "sha256": "c78be82bd12f8be45794672d764d66e31af4ca091277c79b8ce35f4d1688c3cd"
+    }
+  ],
+  "ungranted": [
+    "complete-two-repository-foundation",
+    "formal-connector-api",
+    "sdk-http",
+    "pk-provider",
+    "complete-f20-runtime",
+    "real-database-delivery",
+    "f1-performance",
+    "release"
+  ]
+}

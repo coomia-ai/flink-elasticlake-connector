@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "scope": "I07-CONNECTOR-exact-logical-api-only",
+  "status": "EXACT_API_INDEPENDENT_REVIEW_PASSED_ACCEPTED_FOR_I16_ONLY",
+  "candidate": {
+    "id": "i07-connector-api-20261028-04",
+    "manifestPath": "build/api-candidates/i07-connector-api-20261028-04/connector-api-candidate.json",
+    "manifestSha256": "48d75c4830b18eead2eca3c08980f87c6dde5889e9ab8631c892ede47c03b9f2",
+    "jarSha256": "1cbb28e353289b277a6acc609c44e42498760fa1e6b318387d45b32992b3226e",
+    "jarLength": 62332,
+    "sourceInputs": 48,
+    "dependencies": 104,
+    "classes": 48,
+    "repositoryFiles": 25,
+    "evidenceFiles": 55,
+    "sdkManifestSha256": "616d10fab067bb10b66f00d61e3de2aa64ed64d4f38619e5973bc6417132198a",
+    "legacySurfaceSha256": "12a645479068ab21f9b3ef20aa799f1704338589ccb515a15cb20e5e8169ce03",
+    "strictSurfaceSha256": "f51c19c10f533f450d99ca36370bfde28b7f1a4f71d7c318f8a3a2e94bcfee82",
+    "sourceInputsSha256": "6d017875b09ca56a50f33f76ec1ddb6e7480cdd0da8a1cee4e29a6f156a88f9d",
+    "dependencyArtifactsSha256": "d9301a8ebfd10150bf6290e99a57ad08bba425efa5d4a867250d731d003dd089"
+  },
+  "execution": {
+    "buildTasksExecuted": 23,
+    "buildSeconds": 143,
+    "ordinaryJava17Tests": 177,
+    "architectureJava21Rules": 22,
+    "propertyChecks": 600,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "relocatedConsumerTasksExecuted": 5,
+    "relocatedConsumerSeconds": 78,
+    "relocatedConsumerJava": "17.0.21.0.2+1-LTS",
+    "resolvedRuntimeJars": 2,
+    "localContractRegressions": 8,
+    "metadataRejections": 10,
+    "sourceControls": 3,
+    "APIOnlyCompileTasksWithoutRules": 3,
+    "APIOnlyCompileSeconds": 25
+  },
+  "referenceAbiProvenance": {
+    "scope": "reference-ABI-oracle-only-not-product-generated",
+    "referenceSource": "ELK/docs/specs/contracts/connector-v3/ConnectorApi.java",
+    "referenceSourceSha256": "f5c28907a0612d408cd1f301a16aa4e43e248c60b79013176f3d2b29178bc447",
+    "referenceClassRoot": "ELK/build/csn-i-connector-contract-review-20261028/build/classes/java/main",
+    "referenceArchive": "ELK/build/csn-i-connector-contract-review-20261028/build/evidence/reference-linkage01/archive.json",
+    "referenceArchiveSha256": "10624529f286558062716a66666524af582bec16d5d07c16bac4d8a0cf793726",
+    "generator": "api-consumer-tests/src/main/java/io/elasticlake/consumer/StrictAbi.java",
+    "generatorSha256": "eafff787c7ae1ad2cb6f462588d34aeb657fde87ac056f61b484e573c426cf85",
+    "command": "javac --release 17 StrictAbi.java; java -cp generator-classes;original-reference-classes;accepted-sdk-jar io.elasticlake.consumer.StrictAbi",
+    "java": "17.0.21.0.2+1-LTS",
+    "sdkJarSha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11",
+    "outputLines": 484,
+    "outputSha256": "f51c19c10f533f450d99ca36370bfde28b7f1a4f71d7c318f8a3a2e94bcfee82"
+  },
+  "rawEvidence": [
+    {
+      "path": "build/i07-candidate04.log",
+      "sha256": "14abb40560b1cc55f93fab8d24d06f22ae5f09ade14690d0bb38bf192cf4a4d6"
+    },
+    {
+      "path": "build/i07-consumer04.log",
+      "sha256": "a8d60dc9abca2f26cef987a3a5c7d2dae44a8b1ae575acb9e6435134538465a7"
+    },
+    {
+      "path": "build/i07-api-only.log",
+      "sha256": "baa31c0f765b3acc961bd8f9dbe50bfe1ae16b70e8b7ffeb2c07a32138f750e2"
+    },
+    {
+      "path": "build/i07-local-contract-red.log",
+      "sha256": "eadd4a040707feb0aa5277c8b509e3d5563e52e6b49ccbd976eda00f9ba8c987"
+    },
+    {
+      "path": "build/api-source-controls/source02/results.json",
+      "sha256": "79b99b272af35dea1ba76b8399853e151ea3869eff92e78ec6cd5cf6ffacad3a"
+    },
+    {
+      "path": "C:\\Users\\Spanc\\AppData\\Local\\Temp\\elasticlake-connector-api04-94e31cd8414344fa9108f5ec3aaedee4\\consumer\\build\\runtime-artifacts.json",
+      "sha256": "ea2f74cdfbdf9bddfe5700402083dbdd90327595d4f46b50523f55b72effc177"
+    },
+    {
+      "path": "C:\\Users\\Spanc\\AppData\\Local\\Temp\\elasticlake-connector-api04-94e31cd8414344fa9108f5ec3aaedee4\\consumer\\build\\negative-controls\\final01\\results.json",
+      "sha256": "ed266b412d4a997c87963499a1e07aec20f1f2ce407d423aeb193657ea863b1d"
+    }
+  ],
+  "ungranted": [
+    "full-FOUNDATION",
+    "full-Connector-build",
+    "CI-with-sealed-inputs",
+    "Sink-runtime",
+    "I05-golden-and-profile",
+    "serializer",
+    "S3-control-provider",
+    "F20",
+    "IO-exit",
+    "installation",
+    "real-database",
+    "performance",
+    "release"
+  ],
+  "independentReview": {
+    "reviewer": "connector_foundation_review",
+    "remainingP0": 0,
+    "remainingP1": 0,
+    "originalSourceRepoAndClassHashesMatched": true,
+    "taskGraphNodes": 32,
+    "taskGraphAcyclic": true,
+    "testsExecutedByReviewer": false,
+    "acceptedForI16": true,
+    "fullFoundationGranted": false
+  }
+}

@@ -1,0 +1,10 @@
+gradle.projectsEvaluated {
+    gradle.rootProject.project(':flink-connector').tasks.named('captureLogicalApiInputs') {
+        doFirst {
+            def file = rootProject.file('build-support/dependency-baseline-flink-connector.json')
+            def baseline = new groovy.json.JsonSlurper().parse(file)
+            baseline.artifacts[0].sha256 = '0' * 64
+            file.text = groovy.json.JsonOutput.toJson(baseline)
+        }
+    }
+}

@@ -1,0 +1,6 @@
+gradle.afterProject { project ->
+    if (project.path == ':connector-recovery-s3') {
+        project.configurations.compileOnly.dependencies.clear()
+        project.dependencies.add('compileOnly', project.dependencies.project(path: ':flink-connector', configuration: 'runtimeElements'))
+    }
+}

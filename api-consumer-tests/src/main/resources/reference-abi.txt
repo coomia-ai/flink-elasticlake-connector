@@ -1,0 +1,484 @@
+io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart component[0] genesis:io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart component[1] priorRunId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart component[2] stoppedPriorRunProof:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$BlobRef component[0] kind:io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind
+io.elasticlake.connector.api.v3.ConnectorApi$BlobRef component[1] immutableKey:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$BlobRef component[2] length:long
+io.elasticlake.connector.api.v3.ConnectorApi$BlobRef component[3] sha256:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart component[0] genesis:io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment component[0] originCheckpointId:long
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment component[1] originWriterId:int
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment component[2] expectedWriters:int
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment component[3] fragment:io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan component[0] epoch:io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan component[1] tables:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$TablePlan>
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan component[2] coverage:io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan component[3] contentDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart component[0] point:io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart component[1] priorRunId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart component[2] stoppedPriorRunProof:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization component[0] originalEpoch:io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization component[1] owner:io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken
+io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization component[2] manifestSha256:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization component[3] invocationId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization component[4] opaqueProof:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit component[0] lineage:io.elasticlake.connector.api.v3.ConnectorApi$Lineage
+io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit component[1] start:io.elasticlake.connector.api.v3.ConnectorApi$RunStart
+io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit component[2] runId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit component[3] planningGeneration:long
+io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit component[4] authorizerEvidence:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$Disposition enum=[KEPT, FILTERED, DEDUPLICATED, DLQ]
+io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity component[0] lineage:io.elasticlake.connector.api.v3.ConnectorApi$Lineage
+io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity component[1] planningGeneration:long
+io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity component[2] originCheckpointId:long
+io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity component[3] coverage:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity component[0] registrationId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity component[1] canonicalSourceStart:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity component[2] sourceStartDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition component[0] position:io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition
+io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition component[1] disposition:io.elasticlake.connector.api.v3.ConnectorApi$Disposition
+io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition component[2] outputs:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping>
+io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition component[3] dlqIdentity:java.util.Optional<io.elasticlake.client.api.v2.ClientApi$Digest>
+io.elasticlake.connector.api.v3.ConnectorApi$IntentRef component[0] sealed:io.elasticlake.connector.api.v3.ConnectorApi$SealedRef
+io.elasticlake.connector.api.v3.ConnectorApi$IntentRef component[1] owner:io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken
+io.elasticlake.connector.api.v3.ConnectorApi$IntentRef component[2] originCheckpointId:long
+io.elasticlake.connector.api.v3.ConnectorApi$Lineage component[0] id:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$Lineage component[1] operatorUid:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$Lineage component[2] transform:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$Lineage component[3] tableBindings:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$Lineage component[4] profile:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity component[0] project:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity component[1] sourceDomain:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity component[2] id:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind enum=[SPOOL, ROOT_FREE_PART, WRITE_PAYLOAD, SEALED, OUTBOX, HANDOFF]
+io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord component[0] epoch:io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord component[1] receipts:java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt>
+io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord component[2] reportIdentity:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord component[3] encodedReport:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping component[0] ordinal:long
+io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping component[1] opaqueTarget:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping component[2] mutation:io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping component[3] operationDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping component[4] eventId:java.util.Optional<java.lang.String>
+io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken component[0] lineageId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken component[1] runId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken component[2] generation:long
+io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken component[3] opaqueGrant:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$PageToken component[0] opaque:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$PartPlan component[0] fact:io.elasticlake.client.api.v2.ClientApi$RootFreeFact
+io.elasticlake.connector.api.v3.ConnectorApi$PartPlan component[1] preparedPart:io.elasticlake.connector.api.v3.ConnectorApi$BlobRef
+io.elasticlake.connector.api.v3.ConnectorApi$PartPlan component[2] writePayload:io.elasticlake.connector.api.v3.ConnectorApi$BlobRef
+io.elasticlake.connector.api.v3.ConnectorApi$PartPlan component[3] requestDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$PartProgress component[0] tableId:int
+io.elasticlake.connector.api.v3.ConnectorApi$PartProgress component[1] slot:int
+io.elasticlake.connector.api.v3.ConnectorApi$PartProgress component[2] stage:io.elasticlake.connector.api.v3.ConnectorApi$PartStage
+io.elasticlake.connector.api.v3.ConnectorApi$PartProgress component[3] ack:java.util.Optional<io.elasticlake.client.api.v2.ClientApi$WriteAck>
+io.elasticlake.connector.api.v3.ConnectorApi$PartStage enum=[INTENT, UNKNOWN, ACKED, LANDED]
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[0] revision:long
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[1] sealed:io.elasticlake.connector.api.v3.ConnectorApi$SealedRef
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[2] parts:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartProgress>
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[3] receipts:java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt>
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[4] durableOutbox:java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef>
+io.elasticlake.connector.api.v3.ConnectorApi$Progress component[5] reportAcknowledged:boolean
+io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef component[0] opaqueVersion:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef component[1] value:io.elasticlake.connector.api.v3.ConnectorApi$Progress
+io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage component[0] plans:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef>
+io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage component[1] next:java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$PageToken>
+io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage component[2] bytesRead:long
+io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision component[0] admitted:boolean
+io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision component[1] reason:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision component[2] permit:io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit
+io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision component[3] pending:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef>
+io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint component[0] completedCheckpointId:long
+io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint component[1] stateIdentity:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$RunRequest component[0] lineage:io.elasticlake.connector.api.v3.ConnectorApi$Lineage
+io.elasticlake.connector.api.v3.ConnectorApi$RunRequest component[1] start:io.elasticlake.connector.api.v3.ConnectorApi$RunStart
+io.elasticlake.connector.api.v3.ConnectorApi$RunRequest component[2] requestedRunId:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$RunStart permits=[io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart, io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart, io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart]
+io.elasticlake.connector.api.v3.ConnectorApi$SealedRef component[0] epoch:io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$SealedRef component[1] manifest:io.elasticlake.connector.api.v3.ConnectorApi$BlobRef
+io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation component[0] id:io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity
+io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation component[1] position:io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition
+io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation component[2] target:io.elasticlake.client.api.v2.ClientApi$TableBinding
+io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation component[3] operation:io.elasticlake.client.api.v2.ClientApi$Mutation
+io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation component[4] eventId:java.util.Optional<java.lang.String>
+io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage component[0] ranges:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SourceRange>
+io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage component[1] canonicalDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain component[0] system:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain component[1] partition:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain component[2] comparator:java.lang.String
+io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain component[3] registryRevision:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition component[0] domain:io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain
+io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition component[1] position:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition component[2] outputOrdinal:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[0] domain:io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[1] start:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[2] end:io.elasticlake.client.api.v2.ClientApi$Bytes
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[3] processedSetDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[4] readCount:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[5] keptCount:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[6] filteredCount:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[7] deduplicatedCount:long
+io.elasticlake.connector.api.v3.ConnectorApi$SourceRange component[8] dlqCount:long
+io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget component[0] call:io.elasticlake.client.api.v2.ClientApi$CallBudget
+io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget component[1] maxReadBytes:long
+io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget component[2] maxObjects:int
+io.elasticlake.connector.api.v3.ConnectorApi$TablePlan component[0] seal:io.elasticlake.client.api.v2.ClientApi$TableSeal
+io.elasticlake.connector.api.v3.ConnectorApi$TablePlan component[1] parts:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartPlan>
+io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment component[0] localFragmentSequence:long
+io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment component[1] chunks:java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef>
+io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment component[2] coverage:io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage
+io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment component[3] contentDigest:io.elasticlake.client.api.v2.ClientApi$Digest
+public abstract interface io.elasticlake.connector.api.v3.ConnectorApi
+public abstract io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.readVerified(io.elasticlake.connector.api.v3.ConnectorApi$BlobRef,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.client.api.v2.ClientApi$CheckpointContext io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverageProvider.exactContext(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,io.elasticlake.client.api.v2.ClientApi$TableBinding)
+public abstract io.elasticlake.client.api.v2.ClientApi$ShutdownReport io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.shutdown(java.time.Duration)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.persistOutbox(io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.putImmutable(io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind,io.elasticlake.client.api.v2.ClientApi$Bytes,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.sealHandoff(io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan io.elasticlake.connector.api.v3.ConnectorApi$PlanAssembler.assemble(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment>,java.util.List<io.elasticlake.client.api.v2.ClientApi$TableBinding>,io.elasticlake.client.api.v2.ClientApi$RequestPlanner,io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.load(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit io.elasticlake.connector.api.v3.ConnectorApi$RunAuthorizer.authorize(io.elasticlake.connector.api.v3.ConnectorApi$RunRequest)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$IntentRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.recordFirstSend(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.openControlledRun(io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.advance(java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef>,io.elasticlake.connector.api.v3.ConnectorApi$Progress,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.listRecoveryCandidates(io.elasticlake.connector.api.v3.ConnectorApi$Lineage,io.elasticlake.connector.api.v3.ConnectorApi$PageToken,int,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.verifyRestore(io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$SealedRef io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.createOrVerify(io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverageProvider.merge(long,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment>,io.elasticlake.client.api.v2.ClientApi$PreparationLimits)
+public abstract java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$IntentRef> io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.resumeIntent(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef> io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore.progress(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public abstract java.util.concurrent.CompletionStage<java.lang.Void> io.elasticlake.connector.api.v3.ConnectorApi$ReportPublisher.publish(io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord,io.elasticlake.client.api.v2.ClientApi$CallBudget)
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorizationVerifier
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$PlanAssembler
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$RecoveryStore
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$ReportPublisher
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$RunAuthorizer
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$RunStart
+public abstract static interface io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverageProvider
+public abstract void io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorizationVerifier.verify(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget)
+public boolean io.elasticlake.connector.api.v3.ConnectorApi$Progress.reportAcknowledged()
+public boolean io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.admitted()
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$Lineage.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$PageToken.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$Progress.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SealedRef.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$TablePlan.equals(java.lang.Object)
+public final boolean io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.equals(java.lang.Object)
+public final int io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$Lineage.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$PageToken.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$Progress.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SealedRef.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$TablePlan.hashCode()
+public final int io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.hashCode()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$Lineage.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$PageToken.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$Progress.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SealedRef.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$TablePlan.toString()
+public final java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.toString()
+public int io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.expectedWriters()
+public int io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.originWriterId()
+public int io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.slot()
+public int io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.tableId()
+public int io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.maxObjects()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.opaqueProof()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.canonicalSourceStart()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.encodedReport()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.position()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.end()
+public io.elasticlake.client.api.v2.ClientApi$Bytes io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.start()
+public io.elasticlake.client.api.v2.ClientApi$CallBudget io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.call()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.stoppedPriorRunProof()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.sha256()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.contentDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.stoppedPriorRunProof()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.manifestSha256()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.authorizerEvidence()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.coverage()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.sourceStartDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$Lineage.profile()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$Lineage.tableBindings()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$Lineage.transform()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.reportIdentity()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.operationDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.requestDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint.stateIdentity()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage.canonicalDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.processedSetDigest()
+public io.elasticlake.client.api.v2.ClientApi$Digest io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.contentDigest()
+public io.elasticlake.client.api.v2.ClientApi$Mutation io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.operation()
+public io.elasticlake.client.api.v2.ClientApi$RootFreeFact io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.fact()
+public io.elasticlake.client.api.v2.ClientApi$TableBinding io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.target()
+public io.elasticlake.client.api.v2.ClientApi$TableSeal io.elasticlake.connector.api.v3.ConnectorApi$TablePlan.seal()
+public io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart(io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity,java.lang.String,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.preparedPart()
+public io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$PartPlan.writePayload()
+public io.elasticlake.connector.api.v3.ConnectorApi$BlobRef io.elasticlake.connector.api.v3.ConnectorApi$SealedRef.manifest()
+public io.elasticlake.connector.api.v3.ConnectorApi$BlobRef(io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind,java.lang.String,long,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart(io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity)
+public io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment(long,int,int,io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment)
+public io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$TablePlan>,io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart(io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint,java.lang.String,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,io.elasticlake.client.api.v2.ClientApi$Digest,java.lang.String,io.elasticlake.client.api.v2.ClientApi$Bytes)
+public io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.permit()
+public io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit(io.elasticlake.connector.api.v3.ConnectorApi$Lineage,io.elasticlake.connector.api.v3.ConnectorApi$RunStart,java.lang.String,long,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.disposition()
+public io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.epoch()
+public io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.originalEpoch()
+public io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.epoch()
+public io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity io.elasticlake.connector.api.v3.ConnectorApi$SealedRef.epoch()
+public io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity(io.elasticlake.connector.api.v3.ConnectorApi$Lineage,long,long,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.genesis()
+public io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart.genesis()
+public io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity(java.lang.String,io.elasticlake.client.api.v2.ClientApi$Bytes,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition(io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition,io.elasticlake.connector.api.v3.ConnectorApi$Disposition,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping>,java.util.Optional<io.elasticlake.client.api.v2.ClientApi$Digest>)
+public io.elasticlake.connector.api.v3.ConnectorApi$IntentRef(io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken,long)
+public io.elasticlake.connector.api.v3.ConnectorApi$Lineage io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.lineage()
+public io.elasticlake.connector.api.v3.ConnectorApi$Lineage io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.lineage()
+public io.elasticlake.connector.api.v3.ConnectorApi$Lineage io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.lineage()
+public io.elasticlake.connector.api.v3.ConnectorApi$Lineage(java.lang.String,java.lang.String,io.elasticlake.client.api.v2.ClientApi$Digest,io.elasticlake.client.api.v2.ClientApi$Digest,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.mutation()
+public io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.id()
+public io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity(java.lang.String,java.lang.String,java.lang.String)
+public io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.kind()
+public io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt>,io.elasticlake.client.api.v2.ClientApi$Digest,io.elasticlake.client.api.v2.ClientApi$Bytes)
+public io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping(long,java.lang.String,io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity,io.elasticlake.client.api.v2.ClientApi$Digest,java.util.Optional<java.lang.String>)
+public io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.owner()
+public io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.owner()
+public io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken(java.lang.String,java.lang.String,long,java.lang.String)
+public io.elasticlake.connector.api.v3.ConnectorApi$PageToken(java.lang.String)
+public io.elasticlake.connector.api.v3.ConnectorApi$PartPlan(io.elasticlake.client.api.v2.ClientApi$RootFreeFact,io.elasticlake.connector.api.v3.ConnectorApi$BlobRef,io.elasticlake.connector.api.v3.ConnectorApi$BlobRef,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$PartProgress(int,int,io.elasticlake.connector.api.v3.ConnectorApi$PartStage,java.util.Optional<io.elasticlake.client.api.v2.ClientApi$WriteAck>)
+public io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.stage()
+public io.elasticlake.connector.api.v3.ConnectorApi$Progress io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef.value()
+public io.elasticlake.connector.api.v3.ConnectorApi$Progress(long,io.elasticlake.connector.api.v3.ConnectorApi$SealedRef,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartProgress>,java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt>,java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef>,boolean)
+public io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef(java.lang.String,io.elasticlake.connector.api.v3.ConnectorApi$Progress)
+public io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage(java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef>,java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$PageToken>,long)
+public io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision(boolean,java.lang.String,io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef>)
+public io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.point()
+public io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint(long,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$RunRequest(io.elasticlake.connector.api.v3.ConnectorApi$Lineage,io.elasticlake.connector.api.v3.ConnectorApi$RunStart,java.lang.String)
+public io.elasticlake.connector.api.v3.ConnectorApi$RunStart io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.start()
+public io.elasticlake.connector.api.v3.ConnectorApi$RunStart io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.start()
+public io.elasticlake.connector.api.v3.ConnectorApi$SealedRef io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.sealed()
+public io.elasticlake.connector.api.v3.ConnectorApi$SealedRef io.elasticlake.connector.api.v3.ConnectorApi$Progress.sealed()
+public io.elasticlake.connector.api.v3.ConnectorApi$SealedRef(io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity,io.elasticlake.connector.api.v3.ConnectorApi$BlobRef)
+public io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation(io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity,io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition,io.elasticlake.client.api.v2.ClientApi$TableBinding,io.elasticlake.client.api.v2.ClientApi$Mutation,java.util.Optional<java.lang.String>)
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.coverage()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.coverage()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage(java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SourceRange>,io.elasticlake.client.api.v2.ClientApi$Digest)
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.domain()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.domain()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain(java.lang.String,java.lang.String,java.lang.String,long)
+public io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.position()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.position()
+public io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition(io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain,io.elasticlake.client.api.v2.ClientApi$Bytes,long)
+public io.elasticlake.connector.api.v3.ConnectorApi$SourceRange(io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain,io.elasticlake.client.api.v2.ClientApi$Bytes,io.elasticlake.client.api.v2.ClientApi$Bytes,io.elasticlake.client.api.v2.ClientApi$Digest,long,long,long,long,long)
+public io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget(io.elasticlake.client.api.v2.ClientApi$CallBudget,long,int)
+public io.elasticlake.connector.api.v3.ConnectorApi$TablePlan(io.elasticlake.client.api.v2.ClientApi$TableSeal,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartPlan>)
+public io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.fragment()
+public io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment(long,java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef>,io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage,io.elasticlake.client.api.v2.ClientApi$Digest)
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart.priorRunId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.immutableKey()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart.priorRunId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization.invocationId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.runId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity.registrationId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$Lineage.id()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$Lineage.operatorUid()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.id()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.project()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity.sourceDomain()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.opaqueTarget()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.lineageId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.opaqueGrant()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.runId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$PageToken.opaque()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef.opaqueVersion()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.reason()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$RunRequest.requestedRunId()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.comparator()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.partition()
+public java.lang.String io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.system()
+public java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt> io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord.receipts()
+public java.util.List<io.elasticlake.client.api.v2.ClientApi$DeliveryReceipt> io.elasticlake.connector.api.v3.ConnectorApi$Progress.receipts()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef> io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.chunks()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping> io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.outputs()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartPlan> io.elasticlake.connector.api.v3.ConnectorApi$TablePlan.parts()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$PartProgress> io.elasticlake.connector.api.v3.ConnectorApi$Progress.parts()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef> io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.plans()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SealedRef> io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision.pending()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$SourceRange> io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage.ranges()
+public java.util.List<io.elasticlake.connector.api.v3.ConnectorApi$TablePlan> io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan.tables()
+public java.util.Optional<io.elasticlake.client.api.v2.ClientApi$Digest> io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition.dlqIdentity()
+public java.util.Optional<io.elasticlake.client.api.v2.ClientApi$WriteAck> io.elasticlake.connector.api.v3.ConnectorApi$PartProgress.ack()
+public java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$BlobRef> io.elasticlake.connector.api.v3.ConnectorApi$Progress.durableOutbox()
+public java.util.Optional<io.elasticlake.connector.api.v3.ConnectorApi$PageToken> io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.next()
+public java.util.Optional<java.lang.String> io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.eventId()
+public java.util.Optional<java.lang.String> io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation.eventId()
+public long io.elasticlake.connector.api.v3.ConnectorApi$BlobRef.length()
+public long io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment.originCheckpointId()
+public long io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit.planningGeneration()
+public long io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.originCheckpointId()
+public long io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity.planningGeneration()
+public long io.elasticlake.connector.api.v3.ConnectorApi$IntentRef.originCheckpointId()
+public long io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping.ordinal()
+public long io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken.generation()
+public long io.elasticlake.connector.api.v3.ConnectorApi$Progress.revision()
+public long io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage.bytesRead()
+public long io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint.completedCheckpointId()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain.registryRevision()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition.outputOrdinal()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.deduplicatedCount()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.dlqCount()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.filteredCount()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.keptCount()
+public long io.elasticlake.connector.api.v3.ConnectorApi$SourceRange.readCount()
+public long io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget.maxReadBytes()
+public long io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment.localFragmentSequence()
+public static final enum io.elasticlake.connector.api.v3.ConnectorApi$Disposition
+public static final enum io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind
+public static final enum io.elasticlake.connector.api.v3.ConnectorApi$PartStage
+public static final io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$Disposition.DEDUPLICATED
+public static final io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$Disposition.DLQ
+public static final io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$Disposition.FILTERED
+public static final io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$Disposition.KEPT
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.HANDOFF
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.OUTBOX
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.ROOT_FREE_PART
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.SEALED
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.SPOOL
+public static final io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.WRITE_PAYLOAD
+public static final io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartStage.ACKED
+public static final io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartStage.INTENT
+public static final io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartStage.LANDED
+public static final io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartStage.UNKNOWN
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$BeforeCheckpointRestart
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$BlobRef
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$BootstrapStart
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$CheckpointFragment
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$CheckpointPlan
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$CheckpointRestart
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$CommitAuthorization
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$ControlledRunPermit
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$EpochIdentity
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$GenesisIdentity
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$InputDisposition
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$IntentRef
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$Lineage
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$MutationIdentity
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$OutboxRecord
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$OutputMapping
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$OwnershipToken
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$PageToken
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$PartPlan
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$PartProgress
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$Progress
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$ProgressRef
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$RecoveryPage
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$RestoreDecision
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$RestorePoint
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$RunRequest
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SealedRef
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SinkMutation
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SourceCoverage
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SourceDomain
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SourcePosition
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$SourceRange
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$StoreBudget
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$TablePlan
+public static final record io.elasticlake.connector.api.v3.ConnectorApi$WriterFragment
+public static io.elasticlake.connector.api.v3.ConnectorApi$Disposition io.elasticlake.connector.api.v3.ConnectorApi$Disposition.valueOf(java.lang.String)
+public static io.elasticlake.connector.api.v3.ConnectorApi$Disposition[] io.elasticlake.connector.api.v3.ConnectorApi$Disposition.values()
+public static io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.valueOf(java.lang.String)
+public static io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind[] io.elasticlake.connector.api.v3.ConnectorApi$ObjectKind.values()
+public static io.elasticlake.connector.api.v3.ConnectorApi$PartStage io.elasticlake.connector.api.v3.ConnectorApi$PartStage.valueOf(java.lang.String)
+public static io.elasticlake.connector.api.v3.ConnectorApi$PartStage[] io.elasticlake.connector.api.v3.ConnectorApi$PartStage.values()

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "scope": "accepted-layout-independent-pure-key-framing",
+  "ownerAnswer": "接收该精确布局并继续（推荐）",
+  "inputs": [
+    {
+      "path": "docs/specs/fixtures/client-v2/proposals/key-frame-v1.md",
+      "length": 2924,
+      "sha256": "e9a88899a2d863567d175276ad9ad60a74349ea5ef16da6da834e3a01a311528"
+    },
+    {
+      "path": "docs/specs/fixtures/client-v2/proposals/key-frame-v1-sdk-binding.md",
+      "length": 1817,
+      "sha256": "337a2a56cc45b170932922ecf19901023f1e854ad205b0f29118fe3af146761b"
+    },
+    {
+      "path": "docs/decisions/OWNER-APPROVAL-CONNECTOR-KEY-FRAME-2026-10-28.md",
+      "length": 2057,
+      "sha256": "2877d1284f487ca5073a68cf10143eab7d4586a4c3fe3905408118efca93bc9f"
+    },
+    {
+      "path": "docs/specs/fixtures/client-v2/vectors.json",
+      "length": 28722,
+      "sha256": "2f3cec2736b90f62291eac17c6aec150aa8c82d72337a3e0589c3fb65170b2a2"
+    },
+    {
+      "path": "sdk/client-api/src/main/java/io/elasticlake/client/api/v2/ClientApi.java",
+      "length": 32414,
+      "sha256": "a52ffa052cfb8c5819bf4a81fd58c9c82855cead83fa38fa44ea8ff187bd3c25"
+    },
+    {
+      "path": "sdk/client-api/src/main/java/io/elasticlake/client/api/v2/ApiValues.java",
+      "length": 22914,
+      "sha256": "cb06cd7d234e0374cddc95ab33b53ab45307b823787ea288188ab2f0c7f948de"
+    }
+  ],
+  "importsProductionCode": false,
+  "validFraming": 23,
+  "oracleRejections": 10,
+  "JavaRepresentableRejections": 9,
+  "upperModelSuccessfulCases": 18,
+  "upperModelNfdSdkBindingConflict": 1,
+  "upperModelExcludedFramingOnly": 4,
+  "SDKFieldCorrection": "opaqueIdentity is String; tableId is int",
+  "SDKNameNormalization": "NFC; requires explicit original raw identity and exact comparison",
+  "completeI05Accepted": false,
+  "canonicalFrameGateGranted": false,
+  "profileAccepted": false,
+  "runtimeAccepted": false,
+  "performanceAccepted": false
+}

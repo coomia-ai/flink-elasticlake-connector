@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-27",
+  "scope": "external-connector-non-product-build-preparation",
+  "status": "implemented-independent-review-passed-owner-acceptance-pending",
+  "candidate": {
+    "id": "i06-connector-foundation-20261027-03",
+    "revision": 2,
+    "manifestPath": "build/foundation-candidates/i06-connector-foundation-20261027-03/connector-candidate.json",
+    "manifestSha256": "46bf9c8832c0390ff263150f5495b95a9060880509ac56b323b88f9a0b0ce569",
+    "sourceInputs": 44,
+    "sourceInputsSha256": "c31bf6b3cf34c889da0cdda114e2f53993ed2abb921211ba432832f737f20a97",
+    "dependencyRecords": 174,
+    "dependencyArtifactsSha256": "fcdf9e88c3b0858a6d694e8205eccf9125a55fcbfdb2ab991dfa43ea87213dd3",
+    "repositoryFiles": 45,
+    "evidenceFiles": 16,
+    "nonProductProbe": true,
+    "foundationAccepted": false,
+    "productAccepted": false
+  },
+  "trustedInputs": {
+    "sdkApiManifestSha256": "616d10fab067bb10b66f00d61e3de2aa64ed64d4f38619e5973bc6417132198a",
+    "sdkApiJarSha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11",
+    "rulesManifestSha256": "f95c9fa88ec481f3b361b0bb83e2f9faf8ebd7ea078f9ed2832304a3e52ca42f",
+    "unchangedBuildVerifierSha256": "b816ee1598f26c53bec9f5028d0939090ff4eaa5e06e7f2474559a0d18ed17d9"
+  },
+  "positive": {
+    "buildTasksExecuted": 57,
+    "buildSeconds": 72,
+    "originalXmlFiles": 4,
+    "ordinaryJava17Tests": 4,
+    "architectureJava21Rules": 44,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "archivedClasses": 7,
+    "taskGraphNodes": 84,
+    "taskGraphAcyclic": true,
+    "relocatedConsumerJava": "17.0.21.0.2+1-LTS",
+    "relocatedConsumerTasksExecuted": 3,
+    "relocatedConsumerSeconds": 24,
+    "apiOnlyTasksExecuted": 4,
+    "apiOnlyRequiresRulesRepository": false,
+    "defaultScaffoldBuildPassed": true,
+    "defaultScaffoldProductTests": 0
+  },
+  "negativeControls": {
+    "historicalMetadataControlsPassed": 8,
+    "historicalCliControlsPassed": 5,
+    "sdkPinDriftRejected": true,
+    "privateDependencyByteDriftRejected": true,
+    "architectureBareJarCaptureRejected": true,
+    "architectureBareJarDirectCompileRejected": true,
+    "rejectedControlsSealedCandidate": false,
+    "invalidFoundationRunIdAttemptCountedAsPass": false
+  },
+  "independentReview": {
+    "agent": "connector_foundation_review",
+    "userAuthorizedReadOnly": true,
+    "remainingP0": 0,
+    "remainingP1": 0,
+    "scope": "non-product-foundation-repair-only"
+  },
+  "rawEvidence": [
+    {
+      "path": "build/foundation-final03.log",
+      "sha256": "febe0866f8e4f55bada0e199c3daa2cfa8bbbcc88690e24092bca66c8ffad662"
+    },
+    {
+      "path": "build/foundation-relocated-consumer-v3.log",
+      "sha256": "85b3d6793906a1b324ebddd38dc1c793daab76d663670842cbf88a24b181dca5"
+    },
+    {
+      "path": "build/foundation-api-only.log",
+      "sha256": "fbe18325d0798596ce23fa74490641efb9f44b4b92bbd7c0269977567592a081"
+    },
+    {
+      "path": "build/foundation-api-only-proof/task-graph.json",
+      "sha256": "ff5ec586e8ea1e083c2d26d9b3659a334cd4c06d58aea2f62c33ab493293b79c"
+    },
+    {
+      "path": "build/foundation-drift-negative-results.json",
+      "sha256": "5197e11b68632609456d7480116bbc28b591d84b8f8e21a5ac1d874ef1df132b"
+    },
+    {
+      "path": "build/foundation-architecture-bare-results02.json",
+      "sha256": "d8b60d54c7ae0641c76b042a592363a672e7515f2a3925e214668dd66924724a"
+    }
+  ],
+  "ungranted": [
+    "complete-two-repository-foundation",
+    "formal-connector-api",
+    "sdk-http",
+    "pk-provider",
+    "complete-f20-runtime",
+    "real-database-delivery",
+    "f1-performance",
+    "release"
+  ]
+}

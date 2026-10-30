@@ -1,0 +1,70 @@
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.attributes.java.TargetJvmVersion
+
+def api = sourceSets.create('connectorApi')
+api.java.setSrcDirs(sourceSets.main.java.srcDirs)
+api.java.include('io/elasticlake/connector/api/v3/**')
+sourceSets.main.java.exclude('io/elasticlake/connector/api/v3/**')
+def apiDependencies = configurations.create('connectorApiApi')
+configurations.connectorApiCompileClasspath.extendsFrom(apiDependencies)
+configurations.connectorApiRuntimeClasspath.extendsFrom(apiDependencies)
+configurations.api.extendsFrom(apiDependencies)
+if (rootProject.connectorFoundationEnabled) dependencies.add('connectorApiApi', rootProject.foundationCatalog.findLibrary('elasticlake-client-api').get())
+
+sourceSets.main.compileClasspath += api.output
+sourceSets.main.runtimeClasspath += api.output
+sourceSets.test.compileClasspath += api.output
+sourceSets.test.runtimeClasspath += api.output
+tasks.named('classes') { dependsOn(api.classesTaskName) }
+tasks.named('jar', Jar) { from api.output }
+tasks.named('sourcesJar', Jar) { from api.allSource }
+
+def apiJar = tasks.register('connectorApiJar', Jar) {
+    archiveClassifier = 'logical-api'
+    from api.output
+    dependsOn(api.classesTaskName)
+    doFirst {
+        if (api.output.classesDirs.asFileTree.matching { include '**/*.class' }.empty) {
+            throw new GradleException('Connector logical API is empty; no artifact acceptance')
+        }
+    }
+}
+def apiElements = configurations.create('connectorApiElements') {
+    canBeConsumed = true
+    canBeResolved = false
+    extendsFrom(apiDependencies)
+    attributes {
+        // The logical classes are needed by both provider compilation and its runtime tests.
+        attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
+        attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EXTERNAL))
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 17)
+        attribute(Attribute.of('io.elasticlake.connector.surface', String), 'logical-api')
+    }
+    outgoing.artifact(apiJar)
+}
+components.java.addVariantsFromConfiguration(apiElements) { mapToMavenScope('compile'); mapToOptional() }
+
+if (rootProject.connectorFoundationEnabled) {
+    def verifyApi = tasks.register('verifyConnectorApiIsolation') {
+        dependsOn(rootProject.tasks.named('verifySdkCandidate'))
+        doLast {
+            rootProject.verifyFoundationResolved(project, configurations.connectorApiCompileClasspath, false)
+            def modules = configurations.connectorApiCompileClasspath.incoming.resolutionResult.allComponents.findAll {
+                it.id instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier
+            }
+            if (modules.size() != 1 || modules[0].id.group != 'io.elasticlake' || modules[0].id.module != 'elasticlake-client-api') {
+                throw new GradleException('Connector logical API must compile against JDK17 and only the verified SDK API')
+            }
+        }
+    }
+    tasks.named(api.compileJavaTaskName) { dependsOn(verifyApi) }
+    tasks.named(api.compileJavaTaskName, JavaCompile) {
+        doFirst {
+            if (classpath.files != configurations.connectorApiCompileClasspath.files) {
+                throw new GradleException('Logical API compiler classpath differs from the sole verified SDK API configuration')
+            }
+        }
+    }
+}

@@ -1,0 +1,64 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+tasks.register('verifyLogicalApiNegativeControls') {
+    doLast {
+        def original = file(providers.gradleProperty('connectorManifest').get())
+        def run = providers.gradleProperty('negativeRunId').get()
+        if (!(run ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('Invalid negative control ID')
+        def root = layout.buildDirectory.dir("negative-controls/${run}").get().asFile
+        if (root.exists()) throw new GradleException('Negative controls exist; never overwrite')
+        root.mkdirs()
+        def results = []
+        def edits = [
+            'wrong-trusted-sha': [message: 'trusted manifest SHA differs', action: { m, base -> }],
+            'wrong-sdk-pin': [message: 'identity/SDK/variant differs', action: { m, base -> m.sdkManifestSha256 = '0' * 64 }],
+            'wrong-classifier': [message: 'identity/SDK/variant differs', action: { m, base -> m.classifier = 'main' }],
+            'source-sha': [message: 'sourceInputs aggregate differs', action: { m, base -> m.sourceInputs[0].sha256 = '0' * 64 }],
+            'class-sha': [message: 'classFiles aggregate differs', action: { m, base -> m.classFiles[0].sha256 = '0' * 64 }],
+            'abi-sha': [message: 'ABI SHA differs', action: { m, base -> m.abiSha256 = '0' * 64 }],
+            'missing-module': [message: 'repository inventory differs', action: { m, base ->
+                def entry = m.files.find { it.path.endsWith('.module') }
+                if (!new File(base, 'repository/' + entry.path).delete()) throw new GradleException('Cannot remove private negative module')
+            }],
+            'jar-byte': [message: 'repository SHA/length differs', action: { m, base ->
+                def entry = m.files.find { it.path.endsWith('.jar') }
+                def f = new File(base, 'repository/' + entry.path)
+                f.append('deliberate corruption')
+            }],
+            'wrong-module-variant': [message: 'variant metadata differs', action: { m, base ->
+                def entry = m.files.find { it.path.endsWith('.module') }
+                def f = new File(base, 'repository/' + entry.path)
+                def module = new JsonSlurper().parse(f)
+                module.variants[0].attributes['io.elasticlake.connector.surface'] = 'main'
+                f.text = JsonOutput.toJson(module)
+                entry.length = f.length(); entry.sha256 = candidateSha256(f)
+            }],
+            'wrong-pom-sdk': [message: 'POM SDK differs', action: { m, base ->
+                def entry = m.files.find { it.path.endsWith('.pom') }
+                def f = new File(base, 'repository/' + entry.path)
+                f.text = f.getText('UTF-8').replace('elasticlake-client-api', 'elasticlake-client-http')
+                entry.length = f.length(); entry.sha256 = candidateSha256(f)
+            }]
+        ]
+        edits.each { name, spec ->
+            def base = new File(root, name)
+            copy { from(original.parentFile); into(base); exclude 'negative-controls/**' }
+            def target = new File(base, 'connector-api-candidate.json')
+            def m = new JsonSlurper().parse(target)
+            spec.action(m, base)
+            target.text = JsonOutput.prettyPrint(JsonOutput.toJson(m)) + '\n'
+            def sha = name == 'wrong-trusted-sha' ? '0' * 64 : candidateSha256(target)
+            def message = null
+            try {
+                verifyConnectorApiCandidate(new File(base, 'repository'), target, sha, providers.gradleProperty('sdkManifestSha256').get())
+            } catch (GradleException expected) {
+                message = expected.message
+            }
+            if (message == null || !message.contains(spec.message)) throw new GradleException("Wrong control rejection ${name}: ${message}")
+            results.add([name: name, rejected: true, message: message])
+        }
+        new File(root, 'results.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(results)) + '\n'
+        println "LOGICAL_API_NEGATIVE_CONTROLS_OK count=${results.size()}"
+    }
+}

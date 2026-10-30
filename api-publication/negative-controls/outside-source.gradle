@@ -1,0 +1,5 @@
+gradle.projectsEvaluated {
+    def outside = new File(rootProject.projectDir.parentFile, 'OutsideApiInput.java')
+    outside.text = 'package io.elasticlake.connector.api.v3; final class OutsideApiInput {}'
+    gradle.rootProject.project(':flink-connector').tasks.named('compileConnectorApiJava') { source outside }
+}

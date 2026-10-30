@@ -1,0 +1,144 @@
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
+
+ext.candidateSha256 = { File input ->
+    def digest = MessageDigest.getInstance('SHA-256')
+    input.withInputStream { stream ->
+        byte[] buffer = new byte[65536]
+        for (int count; (count = stream.read(buffer)) != -1;) digest.update(buffer, 0, count)
+    }
+    digest.digest().encodeHex().toString()
+}
+def canonicalValue
+canonicalValue = { value ->
+    if (value instanceof Map) return value.collectEntries(new TreeMap()) { key, item -> [(key.toString()): canonicalValue(item)] }
+    if (value instanceof List) return value.collect { canonicalValue(it) }
+    value
+}
+ext.candidateValueSha256 = { value ->
+    MessageDigest.getInstance('SHA-256').digest(JsonOutput.toJson(canonicalValue(value)).getBytes('UTF-8')).encodeHex().toString()
+}
+ext.verifyCandidate = { File repository, File manifestFile, String expectedStage, boolean allowProbe ->
+    if (!repository.directory || !manifestFile.file) throw new GradleException("Missing candidate repository/manifest: ${repository}, ${manifestFile}")
+    def manifest = new JsonSlurper().parse(manifestFile)
+    if (manifest.schemaVersion != 1 || manifest.stage != expectedStage || !manifest.candidateId ||
+        !manifest.contractRevision || !manifest.sourceInputs || !manifest.version || manifest.version.toString() =~ /[+\[\],]|latest/) {
+        throw new GradleException("Invalid candidate identity/stage/version: ${manifestFile}")
+    }
+    if (manifest.nonProductProbe && !allowProbe) throw new GradleException('Non-product I-06 probe is not an approved SDK candidate')
+    if (!(manifest.nonProductProbe instanceof Boolean) || manifest.contractRevision != '3.0-draft.3') throw new GradleException('Unrecognized contract/probe identity')
+    if (candidateValueSha256(manifest.sourceInputs) != manifest.sourceInputsSha256 ||
+        !(manifest.dependencyArtifacts instanceof List) || candidateValueSha256(manifest.dependencyArtifacts) != manifest.dependencyArtifactsSha256) {
+        throw new GradleException('Candidate source/dependency aggregate hash mismatch')
+    }
+    def sourcePaths = new HashSet()
+    manifest.sourceInputs.each { entry ->
+        if (!(entry.path instanceof String) || entry.path.startsWith('/') || entry.path.contains('..') ||
+            entry.path.contains('\\') || entry.path.contains(':') || !sourcePaths.add(entry.path) ||
+            !(entry.length instanceof Number) || entry.length.longValue() < 0 || !(entry.sha256 ==~ /[0-9a-f]{64}/)) {
+            throw new GradleException('Malformed or duplicate candidate source input')
+        }
+    }
+    def dependencyKeys = new HashSet()
+    manifest.dependencyArtifacts.each { entry ->
+        def key = [entry.project, entry.configuration, entry.group, entry.module, entry.version, entry.file].join(':')
+        if (![entry.project, entry.configuration, entry.group, entry.module, entry.version, entry.file].every { it instanceof String && it } ||
+            !dependencyKeys.add(key) || !(entry.length instanceof Number) || entry.length.longValue() < 0 || !(entry.sha256 ==~ /[0-9a-f]{64}/)) {
+            throw new GradleException('Malformed or duplicate candidate dependency input')
+        }
+    }
+    def expectedArtifacts = expectedStage == 'api-only' ? ['elasticlake-client-api'] :
+        expectedStage == 'full-sdk' ? ['elasticlake-client-api', 'elasticlake-client-http'] :
+        expectedStage == 'architecture-rules' ? ['elasticlake-architecture-rules'] : []
+    if (expectedArtifacts.empty || manifest.artifacts != expectedArtifacts || !manifest.files) {
+        throw new GradleException("Candidate artifact set is incomplete: ${manifestFile}")
+    }
+    def paths = manifest.files.collect { it.path }
+    if (paths.size() != paths.toSet().size()) throw new GradleException('Duplicate candidate file paths')
+    def actual = fileTree(repository).files.collect { repository.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.toSet()
+    if (actual != paths.toSet()) throw new GradleException("Candidate inventory differs: missing=${paths.toSet() - actual}, unlisted=${actual - paths.toSet()}")
+    manifest.files.each { entry ->
+        def relative = entry.path.toString()
+        if (relative.startsWith('/') || relative.contains('..') || relative.contains('\\') || relative.contains(':')) throw new GradleException("Unsafe candidate path: ${relative}")
+        def artifact = new File(repository, relative)
+        if (artifact.length() != entry.length || candidateSha256(artifact) != entry.sha256) throw new GradleException("Candidate SHA/length mismatch: ${relative}")
+    }
+    def factory = DocumentBuilderFactory.newInstance()
+    factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+    expectedArtifacts.each { artifactId ->
+        def prefix = "io/elasticlake/${artifactId}/${manifest.version}/"
+        def records = manifest.files.findAll { it.path.startsWith(prefix) }
+        def snapshotFiles = [:]
+        if (manifest.version.endsWith('-SNAPSHOT')) {
+            def metadata = new File(repository, prefix + 'maven-metadata.xml')
+            if (!metadata.file) throw new GradleException("Missing snapshot metadata: ${metadata}")
+            def document = factory.newDocumentBuilder().parse(metadata)
+            def value = { node, String name -> (0..<node.childNodes.length).collect { node.childNodes.item(it) }.find { it.nodeName == name }?.textContent }
+            if (value(document.documentElement, 'groupId') != 'io.elasticlake' ||
+                value(document.documentElement, 'artifactId') != artifactId || value(document.documentElement, 'version') != manifest.version) throw new GradleException('Snapshot metadata coordinates mismatch')
+            def versions = document.getElementsByTagName('snapshotVersion')
+            for (int index = 0; index < versions.length; index++) {
+                def node = versions.item(index)
+                def classifier = value(node, 'classifier')
+                def suffix = (classifier ? "-${classifier}" : '') + '.' + value(node, 'extension')
+                def symbolic = "${artifactId}-${manifest.version}${suffix}"
+                if (snapshotFiles.containsKey(symbolic)) throw new GradleException("Duplicate snapshot mapping: ${symbolic}")
+                snapshotFiles[symbolic] = "${artifactId}-${value(node, 'value')}${suffix}"
+                if (!new File(repository, prefix + snapshotFiles[symbolic]).file) throw new GradleException("Snapshot mapping target missing: ${symbolic}")
+            }
+        }
+        ['.jar', '.pom', '.module'].each { suffix ->
+            if (!records.any { it.path.endsWith(suffix) && !it.path.endsWith('-sources.jar') && !it.path.endsWith('-test-fixtures.jar') }) {
+                throw new GradleException("Missing ${artifactId} ${suffix}")
+            }
+        }
+        records.findAll { it.path.endsWith('.pom') }.each { record ->
+            def document = factory.newDocumentBuilder().parse(new File(repository, record.path))
+            def root = document.documentElement
+            def direct = { String name -> (0..<root.childNodes.length).collect { root.childNodes.item(it) }.find { it.nodeName == name }?.textContent }
+            if (direct('groupId') != 'io.elasticlake' || direct('artifactId') != artifactId || direct('version') != manifest.version) throw new GradleException("POM coordinates mismatch: ${record.path}")
+            def dependencies = document.getElementsByTagName('dependency')
+            for (int index = 0; index < dependencies.length; index++) {
+                def dependency = dependencies.item(index)
+                def value = { String name -> (0..<dependency.childNodes.length).collect { dependency.childNodes.item(it) }.find { it.nodeName == name }?.textContent }
+                if (artifactId == 'elasticlake-client-api') throw new GradleException('client-api POM must have no dependencies')
+                if (artifactId == 'elasticlake-client-http' && value('groupId') == 'io.elasticlake' &&
+                    (value('artifactId') != 'elasticlake-client-api' || value('version') != manifest.version)) throw new GradleException('SDK POM dependency mismatch')
+            }
+        }
+        records.findAll { it.path.endsWith('.module') }.each { record ->
+            def module = new JsonSlurper().parse(new File(repository, record.path))
+            if (module.component.group != 'io.elasticlake' || module.component.module != artifactId || module.component.version != manifest.version) throw new GradleException("Module coordinates mismatch: ${record.path}")
+            module.variants.each { variant ->
+                (variant.dependencies ?: []).each { dependency ->
+                    if (artifactId == 'elasticlake-client-api') throw new GradleException('client-api module metadata must have no dependencies')
+                    if (artifactId == 'elasticlake-client-http' && dependency.group == 'io.elasticlake' &&
+                        (dependency.module != 'elasticlake-client-api' || dependency.version.requires != manifest.version)) throw new GradleException('SDK module dependency mismatch')
+                }
+                (variant.files ?: []).each { declared ->
+                    if (declared.url.contains('/') || declared.url.contains('\\') || declared.url.contains('..')) throw new GradleException("Unsafe module URL: ${declared.url}")
+                    def target = new File(new File(repository, record.path).parentFile, snapshotFiles.get(declared.url, declared.url))
+                    if (!target.file || target.length() != declared.size || candidateSha256(target) != declared.sha256) throw new GradleException("Module file metadata mismatch: ${declared.url}")
+                }
+            }
+        }
+        def classCount = 0
+        records.findAll { it.path.endsWith('.jar') && !it.path.endsWith('-sources.jar') }.each { record ->
+            new ZipFile(new File(repository, record.path)).withCloseable { archive ->
+                archive.entries().findAll { it.name.endsWith('.class') }.each { entry ->
+                    def bytes = archive.getInputStream(entry).withCloseable { it.readNBytes(8) }
+                    def major = ((bytes[6] & 255) << 8) | (bytes[7] & 255)
+                    def expectedMajor = expectedStage == 'architecture-rules' ? 65 : 61
+                    if (major != expectedMajor) throw new GradleException("Wrong bytecode ${record.path}!${entry.name}: major${major}, expected${expectedMajor}")
+                    if (expectedStage != 'architecture-rules' && (entry.name.startsWith('io/elasticlake/arch/') || entry.name.startsWith('com/tngtech/'))) throw new GradleException("Architecture rules leaked: ${entry.name}")
+                    classCount++
+                }
+            }
+        }
+        if (classCount == 0) throw new GradleException("Empty candidate JAR: ${artifactId}")
+    }
+    manifest
+}

@@ -1,0 +1,6 @@
+gradle.afterProject { project ->
+    if (project.path == ':flink-connector') {
+        project.dependencies.add('architectureTestCompileOnly',
+            project.files(project.rootProject.file('build/negative-inputs/architecture-private.jar')))
+    }
+}

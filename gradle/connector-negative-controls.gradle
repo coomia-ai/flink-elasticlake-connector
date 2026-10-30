@@ -1,0 +1,85 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+tasks.register('verifyFoundationCandidateNegativeControls') {
+    group = 'verification'
+    dependsOn('verifySdkCandidate')
+    doLast {
+        def runId = providers.gradleProperty('negativeRunId').get()
+        if (!(runId ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('Safe negativeRunId required')
+        def directory = layout.buildDirectory.dir("foundation-negative-controls/${runId}").get().asFile
+        if (directory.exists()) throw new GradleException('Negative-control run exists; choose a fresh id')
+        directory.mkdirs()
+        def cases = [
+            'wrong-jar': 'Candidate SHA/length mismatch',
+            'missing-jar': 'Candidate inventory differs',
+            'missing-module': 'Candidate inventory differs',
+            'wrong-pom-version': 'POM coordinates mismatch',
+            'wrong-module-version': 'Module coordinates mismatch',
+            'extra-file': 'Candidate inventory differs',
+            'source-drift': 'aggregate hash mismatch',
+            'duplicate-source': 'Malformed or duplicate candidate source input'
+        ]
+        def results = []
+        cases.each { name, expectedMessage ->
+            def root = new File(directory, name)
+            def repository = new File(root, 'repository')
+            copy { from foundationSdk.repository; into repository }
+            def manifest = new JsonSlurper().parse(foundationSdk.manifestFile)
+            def targetRecord = { String suffix -> manifest.files.find { it.path.endsWith(suffix) } }
+            def refresh = { record ->
+                def target = new File(repository, record.path)
+                record.length = target.length()
+                record.sha256 = candidateSha256(target)
+            }
+            switch (name) {
+                case 'wrong-jar':
+                    new File(repository, targetRecord('.jar').path).append('deliberate-corruption')
+                    break
+                case 'missing-jar':
+                case 'missing-module':
+                    def target = new File(repository, targetRecord(name == 'missing-jar' ? '.jar' : '.module').path)
+                    if (!target.delete()) throw new GradleException('Cannot create missing-artifact control')
+                    break
+                case 'wrong-pom-version':
+                    def record = targetRecord('.pom')
+                    def target = new File(repository, record.path)
+                    target.text = target.getText('UTF-8').replace("<version>${manifest.version}</version>", '<version>9.9.9-invalid</version>')
+                    refresh(record)
+                    break
+                case 'wrong-module-version':
+                    def record = targetRecord('.module')
+                    def target = new File(repository, record.path)
+                    def module = new JsonSlurper().parse(target)
+                    module.component.version = '9.9.9-invalid'
+                    target.text = JsonOutput.toJson(module)
+                    refresh(record)
+                    break
+                case 'extra-file':
+                    new File(repository, 'unregistered.txt').text = 'deliberate extra file'
+                    break
+                case 'source-drift':
+                    manifest.sourceInputs[0].sha256 = '0' * 64
+                    break
+                case 'duplicate-source':
+                    manifest.sourceInputs.add(new LinkedHashMap(manifest.sourceInputs[0]))
+                    manifest.sourceInputsSha256 = candidateValueSha256(manifest.sourceInputs)
+                    break
+            }
+            def candidate = new File(root, 'candidate.json')
+            candidate.text = JsonOutput.toJson(manifest)
+            String observed = null
+            try {
+                verifyCandidate(repository, candidate, 'api-only', false)
+            } catch (GradleException rejection) {
+                observed = rejection.message
+            }
+            if (observed == null || !observed.contains(expectedMessage)) {
+                throw new GradleException("Negative control did not reject at expected boundary: ${name}, observed=${observed}")
+            }
+            results.add([name: name, rejected: true, expectedMessage: expectedMessage, observed: observed])
+        }
+        new File(directory, 'results.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(results)) + '\n'
+        logger.lifecycle("Foundation candidate negative controls: ${results.size()} rejected at exact expected boundaries")
+    }
+}

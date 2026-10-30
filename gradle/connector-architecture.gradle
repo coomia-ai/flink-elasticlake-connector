@@ -1,0 +1,78 @@
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+
+def architecture = sourceSets.create('architectureTest')
+def generated = layout.buildDirectory.dir('generated/sources/architectureTest/java')
+def rules = ['InjectionRules', 'ExecutionCurrencyRules', 'CodingRules', 'PackagingRules',
+             'PublicationInternalAccessRules', 'ScanCoverageRules']
+def generate = tasks.register('generateArchitectureTest') {
+    outputs.dir(generated)
+    doLast {
+        def target = generated.get().file('io/elasticlake/buildcheck/ArchitectureTest.java').asFile
+        target.parentFile.mkdirs()
+        target.text = '''package io.elasticlake.buildcheck;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.junit.ArchTests;
+import io.elasticlake.arch.rules.*;
+@AnalyzeClasses(locations = ModuleMainClasses.class)
+class ArchitectureTest {
+''' + rules.collect { "  @ArchTest static final ArchTests ${it.uncapitalize()} = ArchTests.in(${it}.class);" }.join('\n') + '\n}\n'
+    }
+}
+architecture.java.srcDir(generated)
+configurations.architectureTestImplementation.extendsFrom(configurations.testImplementation)
+configurations.architectureTestRuntimeOnly.extendsFrom(configurations.testRuntimeOnly)
+['architectureTestCompileClasspath', 'architectureTestRuntimeClasspath'].each {
+    configurations.getByName(it).attributes.attribute(org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+}
+if (rootProject.connectorFoundationEnabled) {
+    dependencies { architectureTestImplementation rootProject.foundationCatalog.findLibrary('elasticlake-architecture-rules').get() }
+}
+tasks.named(architecture.compileJavaTaskName, JavaCompile) {
+    dependsOn(generate, rootProject.tasks.named('verifyRulesCandidate'))
+    javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(21) }
+    options.release = 21
+    doFirst {
+        rootProject.verifyFoundationResolved(project, configurations.architectureTestCompileClasspath, true)
+        if (classpath.files != configurations.architectureTestCompileClasspath.files) {
+            throw new GradleException('Architecture compiler classpath differs from verified configuration')
+        }
+    }
+}
+def architectureTest = tasks.register('architectureTest', Test) {
+    group = 'verification'
+    dependsOn('classes', rootProject.tasks.named('verifyRulesCandidate'))
+    testClassesDirs = architecture.output.classesDirs
+    classpath = architecture.runtimeClasspath + sourceSets.main.output
+    if (sourceSets.findByName('connectorApi') != null) classpath += sourceSets.connectorApi.output
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+    useJUnitPlatform()
+    doFirst {
+        def scanOutputs = [main: sourceSets.main.output.classesDirs]
+        if (sourceSets.findByName('connectorApi') != null) scanOutputs.connectorApi = sourceSets.connectorApi.output.classesDirs
+        if (providers.gradleProperty('connectorApiOnly').orElse('false').get() == 'true') {
+            if (project.name != 'flink-connector' || rootProject.connectorFoundationProbe) {
+                throw new GradleException('API-only architecture scan requires real flink-connector API sources')
+            }
+            scanOutputs.remove('main')
+        }
+        def evidence = scanOutputs.collectEntries { label, directories ->
+            def classes = directories.asFileTree.matching { include '**/*.class'; exclude '**/package-info.class' }.files
+            if (classes.empty) throw new GradleException("${path}: empty ${label} architecture scan")
+            def entries = classes.sort { it.path }.collect { compiled ->
+                byte[] bytes = compiled.bytes
+                def major = ((bytes[6] & 255) << 8) | (bytes[7] & 255)
+                if (major != 61) throw new GradleException("${compiled}: architecture target must be Java17")
+                [classFile: compiled.name, sha256: MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString(), major: major]
+            }
+            [(label): [count: entries.size(), classes: entries]]
+        }
+        rootProject.verifyFoundationResolved(project, configurations.architectureTestRuntimeClasspath, true)
+        def report = layout.buildDirectory.file('reports/architecture-inputs.json').get().asFile
+        report.parentFile.mkdirs()
+        report.text = JsonOutput.prettyPrint(JsonOutput.toJson([rules: rules, java: javaLauncher.get().metadata.languageVersion.asInt(), outputs: evidence])) + '\n'
+        systemProperty 'elasticlake.arch.mainOutput', scanOutputs.values().collectMany { it.files as List }.findAll { it.directory }.collect { it.toURI().toString() }.join('|')
+    }
+}
+if (rootProject.connectorFoundationEnabled) tasks.named('check') { dependsOn(architectureTest) }

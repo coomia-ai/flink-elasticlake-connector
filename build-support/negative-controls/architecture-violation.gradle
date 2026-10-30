@@ -1,0 +1,13 @@
+gradle.afterProject { project ->
+    if (project.path == ':flink-connector') {
+        def sourceDirectory = project.rootProject.layout.buildDirectory.dir('negative-source/architecture').get().asFile
+        def source = new File(sourceDirectory, 'io/elasticlake/connector/buildprobe/ClockViolation.java')
+        source.parentFile.mkdirs()
+        source.text = '''package io.elasticlake.connector.buildprobe;
+public final class ClockViolation {
+  public static long forbiddenClock() { return System.nanoTime(); }
+}
+'''
+        project.sourceSets.main.java.srcDir(sourceDirectory)
+    }
+}

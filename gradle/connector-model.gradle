@@ -1,0 +1,163 @@
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+import javax.xml.parsers.DocumentBuilderFactory
+
+// I-16 uses the unique compiled API output, byte-identical to the accepted logical variant.
+def verifyApi = tasks.register('verifyModelApiBoundary') {
+    dependsOn('compileConnectorApiJava', rootProject.tasks.named('verifySdkCandidate'))
+    doLast {
+        def receipt = new JsonSlurper().parse(rootProject.file('api-publication/acceptance.json'))
+        if (receipt.acceptedForI16 != true || receipt.remainingP0 != 0 || receipt.remainingP1 != 0 ||
+            receipt.sdkManifestSha256 != providers.gradleProperty('sdkManifestSha256').get()) throw new GradleException('Model requires the exact accepted API input')
+        def manifestFile = rootProject.file(receipt.candidateManifest)
+        def candidate = project.verifyConnectorApiCandidate(new File(manifestFile.parentFile, 'repository'), manifestFile,
+            receipt.candidateManifestSha256, receipt.sdkManifestSha256)
+        if (!candidate.files.any { it.path.endsWith('.jar') && it.sha256 == receipt.jarSha256 } ||
+            candidate.classFilesSha256 != receipt.classFilesSha256) throw new GradleException('Model API receipt differs from candidate')
+        def actual = sourceSets.connectorApi.output.classesDirs.asFileTree.matching { include '**/*.class' }.files.collect { f ->
+            def base = sourceSets.connectorApi.output.classesDirs.files.find { f.toPath().startsWith(it.toPath()) }
+            [path: base.toPath().relativize(f.toPath()).toString().replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)]
+        }.sort { it.path }
+        if (rootProject.candidateValueSha256(actual) != candidate.classFilesSha256) throw new GradleException('Model compiler API classes differ from accepted logical artifact')
+    }
+}
+if (!rootProject.connectorFoundationProbe) {
+    tasks.named('compileJava') { dependsOn(verifyApi) }
+    tasks.named('compileTestJava') { dependsOn(verifyApi) }
+}
+
+def runId = providers.gradleProperty('modelRunId')
+def runDirectory = { ->
+    def id = runId.get()
+    if (!(id ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('Invalid model run ID')
+    rootProject.file("build/model-evidence/${id}")
+}
+def inventory = { File base -> fileTree(base).files.sort { it.path }.collect { f ->
+    [path: base.toPath().relativize(f.toPath()).toString().replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)]
+} }
+def modelInputs = { ->
+    def inputs = rootProject.files('AGENTS.md', 'LICENSE', 'NOTICE', 'gradlew', 'gradlew.bat', 'gradle.properties', 'settings.gradle.kts',
+        'settings-gradle.lockfile', 'build.gradle.kts', rootProject.fileTree('gradle'), rootProject.fileTree('api-publication'),
+        rootProject.fileTree('build-support/architecture'), rootProject.file('build-support/dependency-baseline-flink-connector.json'),
+        file('build.gradle.kts'), file('gradle.lockfile'), sourceSets.main.allSource, sourceSets.test.allSource,
+        sourceSets.connectorApi.allSource, tasks.withType(JavaCompile).collect { it.source }, gradle.startParameter.allInitScripts)
+    def source = inputs.files.findAll { it.file }.collect { f ->
+        if (!f.toPath().toAbsolutePath().normalize().startsWith(rootProject.projectDir.toPath().toAbsolutePath().normalize())) throw new GradleException('Model input outside reviewed repository')
+        [path: rootProject.relativePath(f).replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)]
+    }.sort { it.path }
+    def baseline = new JsonSlurper().parse(rootProject.file('build-support/dependency-baseline-flink-connector.json'))
+    def dependencies = ['compileClasspath', 'runtimeClasspath', 'connectorApiCompileClasspath', 'connectorApiRuntimeClasspath',
+        'testCompileClasspath', 'testRuntimeClasspath', 'architectureTestCompileClasspath', 'architectureTestRuntimeClasspath'].collectMany { name ->
+        def config = configurations.getByName(name)
+        rootProject.verifyFoundationResolved(project, config, name.startsWith('architectureTest'))
+        config.resolvedConfiguration.resolvedArtifacts.collect { a ->
+            def record = [configuration: name, group: a.moduleVersion.id.group, module: a.moduleVersion.id.name, version: a.moduleVersion.id.version,
+                file: a.file.name, length: a.file.length(), sha256: rootProject.candidateSha256(a.file)]
+            if (!baseline.artifacts.any { b -> record.every { k, v -> b[k] == v } }) throw new GradleException('Model dependency differs from source-bound byte baseline')
+            record
+        }
+    }.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+    def compilers = tasks.withType(JavaCompile).collect { t -> [task: t.path, java: t.javaCompiler.get().metadata.javaRuntimeVersion,
+        release: t.options.release.get(), compilerArgs: t.options.compilerArgs,
+        sources: t.source.files.findAll { it.file }.collect { rootProject.relativePath(it).replace('\\', '/') }.sort()] }.sort { it.task }
+    [sources: source, dependencies: dependencies, compilers: compilers,
+        sdkManifestSha256: providers.gradleProperty('sdkManifestSha256').get(), rulesManifestSha256: providers.gradleProperty('rulesManifestSha256').get(),
+        apiAcceptanceSha256: rootProject.candidateSha256(rootProject.file('api-publication/acceptance.json'))]
+}
+def assertModelInputs = { ->
+    rootProject.loadFoundationCandidate('sdk', 'api-only')
+    rootProject.loadFoundationCandidate('rules', 'architecture-rules')
+    def original = new JsonSlurper().parse(new File(runDirectory(), 'inputs.json'))
+    if (rootProject.candidateValueSha256(original) != rootProject.candidateValueSha256(modelInputs())) throw new GradleException('Model inputs/dependencies/compiler/pins drifted after capture')
+}
+def capture = tasks.register('captureModelInputs') {
+    dependsOn(rootProject.tasks.named('verifySdkCandidate'), rootProject.tasks.named('verifyRulesCandidate'), 'verifyConnectorDependencyBytes', 'generateArchitectureTest')
+    doLast {
+        if (rootProject.connectorFoundationProbe || providers.gradleProperty('apiCandidateId').present) throw new GradleException('Model evidence requires a separate real model run')
+        def target = runDirectory()
+        if (target.exists()) throw new GradleException('Model evidence exists; never overwrite')
+        target.mkdirs()
+        new File(target, 'inputs.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(modelInputs())) + '\n'
+    }
+}
+def classInputs = { Test task ->
+    task.classpath.files.findAll { it.directory }.collectMany { dir ->
+        if (!dir.toPath().toAbsolutePath().normalize().startsWith(rootProject.projectDir.toPath().toAbsolutePath().normalize())) throw new GradleException('Unbound model test class directory')
+        fileTree(dir).matching { include '**/*.class' }.files.collect { f ->
+            [path: rootProject.relativePath(f).replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)]
+        }
+    }.sort { it.path }
+}
+def resourceInputs = { Test task ->
+    task.classpath.files.findAll { it.directory }.collectMany { dir ->
+        if (!dir.toPath().toAbsolutePath().normalize().startsWith(rootProject.projectDir.toPath().toAbsolutePath().normalize())) throw new GradleException('Unbound model resource directory')
+        fileTree(dir).matching { exclude '**/*.class' }.files.collect { f ->
+            [path: rootProject.relativePath(f).replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)]
+        }
+    }.sort { it.path }
+}
+def graph = []
+gradle.taskGraph.whenReady { taskGraph -> graph = taskGraph.allTasks.collect { t ->
+    [task: t.path, dependencies: t.taskDependencies.getDependencies(t).findAll { taskGraph.hasTask(it) }.collect { it.path }.sort()]
+} }
+if (runId.present) {
+    tasks.withType(JavaCompile).configureEach { dependsOn(capture); doFirst { assertModelInputs() } }
+    tasks.withType(Test).configureEach { t ->
+        dependsOn(capture)
+        doFirst {
+            assertModelInputs()
+            def classes = classInputs(t)
+            if (classes.empty) throw new GradleException('Empty model test input')
+            def target = new File(runDirectory(), "${t.name}-class-inputs.json")
+            if (target.exists()) throw new GradleException('Model class input receipt exists')
+            target.text = JsonOutput.prettyPrint(JsonOutput.toJson([java: t.javaLauncher.get().metadata.javaRuntimeVersion, classes: classes, resources: resourceInputs(t)])) + '\n'
+        }
+        doLast {
+            def input = new JsonSlurper().parse(new File(runDirectory(), "${t.name}-class-inputs.json"))
+            if (rootProject.candidateValueSha256(input.classes) != rootProject.candidateValueSha256(classInputs(t))) throw new GradleException('Model classes changed during execution')
+            if (rootProject.candidateValueSha256(input.resources) != rootProject.candidateValueSha256(resourceInputs(t))) throw new GradleException('Model resources changed during execution')
+        }
+    }
+}
+tasks.register('archiveModelEvidence') {
+    dependsOn('check')
+    doLast {
+        assertModelInputs()
+        def target = runDirectory()
+        def archive = new File(target, 'archive')
+        if (archive.exists()) throw new GradleException('Model archive exists')
+        archive.mkdirs()
+        def captured = new JsonSlurper().parse(new File(target, 'inputs.json'))
+        captured.sources.each { record ->
+            def file = rootProject.file(record.path)
+            def folder = new File(archive, "sources/${new File(record.path).parent ?: ''}")
+            copy { from(file); into(folder) }
+            if (rootProject.candidateSha256(new File(folder, file.name)) != record.sha256) throw new GradleException('Archived model source differs from captured input')
+        }
+        def factory = DocumentBuilderFactory.newInstance()
+        factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+        ['test', 'architectureTest'].each { name ->
+            def task = tasks.named(name, Test).get()
+            def reports = fileTree(task.reports.junitXml.outputLocation.get()).matching { include 'TEST-*.xml' }.files
+            if (reports.empty) throw new GradleException('Missing original model XML')
+            reports.each { f -> def node = factory.newDocumentBuilder().parse(f).documentElement
+                if (node.getAttribute('tests').toInteger() == 0 || ['failures', 'errors', 'skipped'].any { node.getAttribute(it).toInteger() != 0 }) throw new GradleException('Model tests failed or incomplete')
+            }
+            copy { from(reports); into(new File(archive, name)) }
+            def input = new JsonSlurper().parse(new File(target, "${name}-class-inputs.json"))
+            if (rootProject.candidateValueSha256(input.classes) != rootProject.candidateValueSha256(classInputs(task))) throw new GradleException('Tested model classes changed before archive')
+            if (rootProject.candidateValueSha256(input.resources) != rootProject.candidateValueSha256(resourceInputs(task))) throw new GradleException('Tested model resources changed before archive')
+            task.classpath.files.findAll { it.directory }.each { dir ->
+                copy { from(dir) { exclude '**/*.class' }; into(new File(archive, "execution-resources/${name}/${rootProject.relativePath(dir)}")) }
+            }
+        }
+        [main: sourceSets.main, api: sourceSets.connectorApi, test: sourceSets.test, architectureTest: sourceSets.architectureTest].each { name, source ->
+            copy { from(source.output.classesDirs); into(new File(archive, "classes/${name}")) }
+        }
+        copy { from(layout.buildDirectory.file('reports/architecture-inputs.json')); into(archive) }
+        new File(archive, 'task-graph.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(graph)) + '\n'
+        copy { from(new File(target, 'inputs.json')); from(new File(target, 'test-class-inputs.json')); from(new File(target, 'architectureTest-class-inputs.json')); into(archive) }
+        new File(target, 'archive.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([scope: 'pure-model-only', files: inventory(archive),
+            fullFoundationAccepted: false, I05Accepted: false, runtimeAccepted: false, performanceAccepted: false])) + '\n'
+    }
+}

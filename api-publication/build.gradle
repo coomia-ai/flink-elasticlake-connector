@@ -1,0 +1,186 @@
+// I-07: this component publishes only the existing logical-api variant.
+import org.gradle.api.publish.maven.MavenPublication
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
+
+apply from: rootProject.file('api-publication/verification.gradle')
+
+def candidateId = providers.gradleProperty('apiCandidateId')
+def candidateDir = { ->
+    def id = candidateId.get()
+    if (!(id ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('Invalid API candidate ID')
+    rootProject.file("build/api-candidates/${id}")
+}
+def toolchains = { ->
+    tasks.withType(JavaCompile).collect { t ->
+        [task: t.path, compiler: t.javaCompiler.get().metadata.javaRuntimeVersion,
+         vendor: t.javaCompiler.get().metadata.vendor, release: t.options.release.get(),
+         compilerArgs: t.options.compilerArgs,
+         sources: t.source.files.findAll { it.file }.collect { rootProject.relativePath(it).replace('\\', '/') }.sort()]
+    }.sort { it.task }
+}
+def taskGraph = []
+gradle.taskGraph.whenReady { graph ->
+    taskGraph = graph.allTasks.collect { t -> [task: t.path,
+        dependencies: t.taskDependencies.getDependencies(t).findAll { graph.hasTask(it) }.collect { it.path }.sort()] }
+}
+def inputs = { ->
+    def paths = rootProject.fileTree(rootProject.projectDir) {
+        include 'AGENTS.md', 'LICENSE', 'NOTICE', 'gradlew', 'gradlew.bat', '*.gradle.kts', '*.lockfile', 'gradle.properties', 'gradle/**',
+            'api-publication/**', 'api-consumer-tests/**', 'build-support/dependency-baseline-*.json', 'build-support/architecture/**',
+            'flink-connector/*.gradle.kts', 'flink-connector/gradle.lockfile',
+            'flink-connector/src/main/java/io/elasticlake/connector/api/v3/**',
+            'flink-connector/src/test/java/io/elasticlake/connector/api/v3/**'
+        exclude '**/build/**', '**/.gradle/**'
+    }.files
+    paths += files(sourceSets.connectorApi.allSource, sourceSets.main.allSource, sourceSets.test.allSource,
+        tasks.withType(JavaCompile).collect { it.source }, gradle.startParameter.allInitScripts).files
+    paths = paths.findAll { it.file }.unique().sort { it.path }
+    paths.each { f ->
+        if (!f.toPath().toAbsolutePath().normalize().startsWith(rootProject.projectDir.toPath().toAbsolutePath().normalize())) {
+            throw new GradleException('API compiler/init input outside repository; copy and review it before publication')
+        }
+    }
+    paths.collect { f -> [path: rootProject.projectDir.toPath().relativize(f.toPath()).toString().replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)] }
+}
+def dependenciesCaptured = { ->
+    def baselineFile = rootProject.file('build-support/dependency-baseline-flink-connector.json')
+    if (!baselineFile.file) throw new GradleException('Missing source-bound API dependency baseline')
+    def baseline = new JsonSlurper().parse(baselineFile)
+    def actual = ['compileClasspath', 'runtimeClasspath', 'connectorApiCompileClasspath', 'connectorApiRuntimeClasspath', 'testCompileClasspath',
+     'testRuntimeClasspath', 'architectureTestCompileClasspath', 'architectureTestRuntimeClasspath'].collectMany { name ->
+        def conf = configurations.getByName(name)
+        rootProject.verifyFoundationResolved(project, conf, name.startsWith('architectureTest'))
+        conf.resolvedConfiguration.resolvedArtifacts.collect { a ->
+            [project: project.path, configuration: name, group: a.moduleVersion.id.group, module: a.moduleVersion.id.name,
+             version: a.moduleVersion.id.version, file: a.file.name, length: a.file.length(), sha256: rootProject.candidateSha256(a.file)]
+        }
+    }.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+    actual.each { a ->
+        if (!baseline.artifacts.any { b ->
+            ['configuration', 'group', 'module', 'version', 'file', 'length', 'sha256'].every { b[it] == a[it] }
+        }) throw new GradleException('API dependency differs from source-bound byte baseline')
+    }
+    actual
+}
+def capture = tasks.register('captureLogicalApiInputs') {
+    dependsOn(rootProject.tasks.named('verifySdkCandidate'), rootProject.tasks.named('verifyRulesCandidate'))
+    dependsOn('generateArchitectureTest')
+    dependsOn('verifyConnectorDependencyBytes')
+    doLast {
+        if (rootProject.connectorFoundationProbe || !providers.gradleProperty('connectorApiOnly').get().toBoolean()) throw new GradleException('API capture requires real API-only inputs')
+        def target = candidateDir()
+        if (target.exists()) throw new GradleException('API candidate exists; never overwrite')
+        target.mkdirs()
+        new File(target, 'inputs.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([
+            sourceInputs: inputs(), dependencies: dependenciesCaptured(), toolchains: toolchains(),
+            sdkManifestSha256: providers.gradleProperty('sdkManifestSha256').get(),
+            rulesManifestSha256: providers.gradleProperty('rulesManifestSha256').get()])) + '\n'
+    }
+}
+def assertCaptured = { ->
+    rootProject.loadFoundationCandidate('sdk', 'api-only')
+    rootProject.loadFoundationCandidate('rules', 'architecture-rules')
+    def original = new JsonSlurper().parse(new File(candidateDir(), 'inputs.json'))
+    if (rootProject.candidateValueSha256(original.sourceInputs) != rootProject.candidateValueSha256(inputs()) ||
+        rootProject.candidateValueSha256(original.dependencies) != rootProject.candidateValueSha256(dependenciesCaptured()) ||
+        original.sdkManifestSha256 != providers.gradleProperty('sdkManifestSha256').get() ||
+        original.rulesManifestSha256 != providers.gradleProperty('rulesManifestSha256').get() ||
+        rootProject.candidateValueSha256(original.toolchains) != rootProject.candidateValueSha256(toolchains())) throw new GradleException('API source/dependency/pin drift after capture')
+    original
+}
+
+def logical = objects.newInstance(LogicalApiComponentFactory).create('logicalApi')
+logical.addVariantsFromConfiguration(configurations.connectorApiElements) { mapToMavenScope('compile') }
+components.add(logical)
+publishing {
+    repositories {
+        maven { name = 'apiCandidate'; url = rootProject.layout.buildDirectory.dir("api-candidates/${candidateId.orElse('UNSET').get()}/repository") }
+    }
+    publications {
+        logicalApi(MavenPublication) {
+            from components.logicalApi
+            artifactId = 'elasticlake-flink-connector-1.20'
+            pom {
+                name = 'ElasticLake Connector logical API'
+                description = 'Flink-independent logical DTO/SPI; no Sink runtime'
+                url = 'https://github.com/coomia-ai/flink-elasticlake-connector'
+                licenses { license { name = 'Apache License, Version 2.0'; url = 'https://www.apache.org/licenses/LICENSE-2.0.txt' } }
+            }
+        }
+    }
+}
+
+if (candidateId.present) {
+    tasks.withType(JavaCompile).configureEach { dependsOn(capture); doFirst { assertCaptured() } }
+    tasks.withType(ProcessResources).configureEach { dependsOn(capture) }
+    tasks.named('publishLogicalApiPublicationToApiCandidateRepository') {
+        dependsOn(capture, 'test', 'architectureTest', 'verifyConnectorPackaging')
+        doFirst { assertCaptured() }
+    }
+}
+tasks.withType(PublishToMavenRepository).configureEach {
+    if (!name.startsWith('publishLogicalApiPublication')) return
+    doFirst {
+        if (!candidateId.present || repository.name != 'apiCandidate' || rootProject.connectorFoundationProbe) throw new GradleException('Only new isolated logical API candidates may be published')
+    }
+}
+
+tasks.register('sealLogicalApiCandidate') {
+    dependsOn('publishLogicalApiPublicationToApiCandidateRepository')
+    doLast {
+        def original = assertCaptured()
+        def target = candidateDir()
+        def output = new File(target, 'connector-api-candidate.json')
+        if (output.exists()) throw new GradleException('Sealed API candidate exists')
+        def evidence = new File(target, 'evidence')
+        if (evidence.exists()) throw new GradleException('API evidence archive exists')
+        evidence.mkdirs()
+        new File(evidence, 'task-graph.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(taskGraph)) + '\n'
+        new File(evidence, 'toolchains.json').text = JsonOutput.prettyPrint(JsonOutput.toJson([gradle: gradle.gradleVersion, compilers: original.toolchains,
+            testRuntime: tasks.named('test', Test).get().javaLauncher.get().metadata.javaRuntimeVersion,
+            architectureRuntime: tasks.named('architectureTest', Test).get().javaLauncher.get().metadata.javaRuntimeVersion])) + '\n'
+        def factory = DocumentBuilderFactory.newInstance()
+        factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+        ['test', 'architectureTest'].each { taskName ->
+            def task = tasks.named(taskName, Test).get()
+            def reports = fileTree(task.reports.junitXml.outputLocation.get()).matching { include 'TEST-*.xml' }.files
+            if (reports.empty) throw new GradleException("No original ${taskName} XML")
+            reports.each { report ->
+                def node = factory.newDocumentBuilder().parse(report).documentElement
+                if (node.getAttribute('tests').toInteger() == 0 || ['failures', 'errors', 'skipped'].any { node.getAttribute(it).toInteger() != 0 }) throw new GradleException("Incomplete API tests: ${report}")
+            }
+            copy { from(reports); into(new File(evidence, taskName)) }
+        }
+        copy { from(layout.buildDirectory.file('reports/architecture-inputs.json')); into(evidence) }
+        copy { from(sourceSets.connectorApi.output.classesDirs); into(new File(evidence, 'classes')) }
+        copy { from(new File(target, 'inputs.json')); into(evidence) }
+        def inventory = { File base -> fileTree(base).files.sort { it.path }.collect { f -> [path: base.toPath().relativize(f.toPath()).toString().replace('\\', '/'), length: f.length(), sha256: rootProject.candidateSha256(f)] } }
+        def classRecords = inventory(new File(evidence, 'classes'))
+        def manifest = [schemaVersion: 1, stage: 'connector-logical-api', candidateId: candidateId.get(),
+            contractRevision: '3.0-draft.3', nonProductProbe: false, version: project.version.toString(),
+            artifacts: ['elasticlake-flink-connector-1.20'], classifier: 'logical-api',
+            sdkManifestSha256: original.sdkManifestSha256, sdkVersion: rootProject.foundationSdk.data.version,
+            sourceInputs: original.sourceInputs, sourceInputsSha256: rootProject.candidateValueSha256(original.sourceInputs),
+            dependencyArtifacts: original.dependencies, dependencyArtifactsSha256: rootProject.candidateValueSha256(original.dependencies),
+            abiSha256: '12a645479068ab21f9b3ef20aa799f1704338589ccb515a15cb20e5e8169ce03',
+            strictAbiSha256: 'f51c19c10f533f450d99ca36370bfde28b7f1a4f71d7c318f8a3a2e94bcfee82',
+            classFiles: classRecords, classFilesSha256: rootProject.candidateValueSha256(classRecords),
+            files: inventory(new File(target, 'repository')), evidenceFiles: inventory(evidence),
+            apiArtifactAccepted: false, runtimeAccepted: false, performanceAccepted: false]
+        def pending = new File(target, 'pending-connector-api-candidate.json')
+        pending.text = JsonOutput.prettyPrint(JsonOutput.toJson(manifest)) + '\n'
+        project.verifyConnectorApiCandidate(new File(target, 'repository'), pending, rootProject.candidateSha256(pending), original.sdkManifestSha256)
+        if (!pending.renameTo(output)) throw new GradleException('Cannot seal new API manifest')
+    }
+}
+
+abstract class LogicalApiComponentFactory {
+    @javax.inject.Inject
+    abstract org.gradle.api.component.SoftwareComponentFactory getComponentFactory()
+    org.gradle.api.component.AdhocComponentWithVariants create(String name) {
+        componentFactory.adhoc(name)
+    }
+}

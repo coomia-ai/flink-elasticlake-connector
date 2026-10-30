@@ -1,0 +1,21 @@
+import java.security.MessageDigest
+
+repositories {
+    // Adversarial availability fixture only; never the Connector's resolution policy.
+    mavenLocal { metadataSources { mavenPom(); artifact(); ignoreGradleMetadataRedirection() } }
+}
+configurations { availability }
+dependencies { availability 'io.elasticlake:elasticlake-client-api:0.1.0-SNAPSHOT' }
+tasks.register('verifyAvailability') {
+    doLast {
+        def artifacts = configurations.availability.resolvedConfiguration.resolvedArtifacts
+        if (artifacts.size() != 1) throw new GradleException('Private mavenLocal must resolve only the SDK API control artifact')
+        def artifact = artifacts.first()
+        def localRoot = new File(System.getProperty('maven.repo.local')).canonicalFile.toPath()
+        if (!artifact.file.canonicalFile.toPath().startsWith(localRoot)) throw new GradleException('Control resolved outside the private mavenLocal directory')
+        def sha = MessageDigest.getInstance('SHA-256').digest(artifact.file.bytes).encodeHex().toString()
+        if (artifact.moduleVersion.id.toString() != 'io.elasticlake:elasticlake-client-api:0.1.0-SNAPSHOT' ||
+            sha != providers.gradleProperty('expectedSdkJarSha256').get()) throw new GradleException('Private mavenLocal control SDK bytes differ')
+        println("PRIVATE_MAVEN_LOCAL_AVAILABLE sha256=${sha}")
+    }
+}

@@ -10,7 +10,16 @@ allprojects {
     version = "0.1.0-SNAPSHOT"
 }
 
+apply(from = "gradle/connector-foundation.gradle")
+
 spotless {
+    java {
+        target("build-support/**/*.java", "api-consumer-tests/src/**/*.java")
+        googleJavaFormat(libs.versions.google.java.format.get())
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
     kotlinGradle {
         target("*.gradle.kts", "*/build.gradle.kts")
         ktlint(libs.versions.ktlint.get())
@@ -70,6 +79,7 @@ subprojects {
 
     extensions.configure<SpotlessExtension> {
         java {
+            target("src/**/*.java")
             googleJavaFormat(rootProject.libs.versions.google.java.format.get())
             removeUnusedImports()
             trimTrailingWhitespace()
@@ -78,6 +88,7 @@ subprojects {
     }
 
     tasks.named("check") { dependsOn("spotlessCheck") }
+    apply(from = rootProject.file("gradle/connector-module.gradle"))
 }
 
 tasks.named("check") {

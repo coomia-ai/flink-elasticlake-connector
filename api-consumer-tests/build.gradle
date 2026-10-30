@@ -1,0 +1,55 @@
+plugins { id 'application' }
+import org.gradle.api.attributes.Attribute
+apply from: 'candidate-verification.gradle'
+apply from: 'verification.gradle'
+
+def sdkRepository = file(providers.gradleProperty('sdkRepository').get())
+def sdkManifest = file(providers.gradleProperty('sdkManifest').get())
+def sdkSha = providers.gradleProperty('sdkManifestSha256').get()
+def apiRepository = file(providers.gradleProperty('connectorRepository').get())
+def apiManifest = file(providers.gradleProperty('connectorManifest').get())
+def apiSha = providers.gradleProperty('connectorManifestSha256').get()
+if (candidateSha256(sdkManifest) != sdkSha) throw new GradleException('Trusted SDK SHA differs')
+def sdk = verifyCandidate(sdkRepository, sdkManifest, 'api-only', false)
+def api = verifyConnectorApiCandidate(apiRepository, apiManifest, apiSha, sdkSha)
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+tasks.withType(JavaCompile).configureEach { options.release = 17 }
+configurations.matching { it.canBeResolved }.configureEach {
+    attributes.attribute(Attribute.of('io.elasticlake.connector.surface', String), 'logical-api')
+}
+dependencies { implementation "io.elasticlake:elasticlake-flink-connector-1.20:${api.version}" }
+application { mainClass = providers.gradleProperty('consumerMainClass').orElse('io.elasticlake.consumer.LogicalApiConsumer') }
+
+def verifyResolved = { ->
+    if (candidateSha256(sdkManifest) != sdkSha) throw new GradleException('Trusted SDK SHA differs')
+    verifyCandidate(sdkRepository, sdkManifest, 'api-only', false)
+    verifyConnectorApiCandidate(apiRepository, apiManifest, apiSha, sdkSha)
+    def evidence = []
+    ['compileClasspath', 'runtimeClasspath'].each { name ->
+        def configuration = configurations.getByName(name)
+        if (configuration.allDependencies.any { it instanceof FileCollectionDependency }) throw new GradleException('Bare consumer dependencies forbidden')
+        def artifacts = configuration.resolvedConfiguration.resolvedArtifacts
+        if (artifacts.size() != 2) throw new GradleException('Logical consumer must resolve exactly API and SDK')
+        artifacts.each { artifact ->
+            def id = artifact.moduleVersion.id
+            def connector = id.name == 'elasticlake-flink-connector-1.20'
+            def manifest = connector ? api : sdk
+            if (!(artifact.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ModuleComponentIdentifier) ||
+                id.group != 'io.elasticlake' || !(id.name in ['elasticlake-flink-connector-1.20', 'elasticlake-client-api']) ||
+                id.version != manifest.version || (connector && artifact.classifier != 'logical-api') ||
+                !manifest.files.any { it.path.endsWith('.jar') && it.length == artifact.file.length() && it.sha256 == candidateSha256(artifact.file) }) {
+                throw new GradleException('Resolved consumer artifact differs from sealed API/SDK')
+            }
+            evidence.add([configuration: name, module: id.name, version: id.version, classifier: artifact.classifier,
+                length: artifact.file.length(), sha256: candidateSha256(artifact.file)])
+        }
+    }
+    def target = layout.buildDirectory.file('runtime-artifacts.json').get().asFile
+    target.parentFile.mkdirs()
+    target.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(evidence)) + '\n'
+}
+tasks.register('verifyResolvedLogicalApi') { doLast { verifyResolved() } }
+tasks.named('compileJava') { dependsOn('verifyResolvedLogicalApi') }
+tasks.named('run') { doFirst { verifyResolved() }; doLast { verifyResolved() } }
+
+apply from: 'negative-controls.gradle'

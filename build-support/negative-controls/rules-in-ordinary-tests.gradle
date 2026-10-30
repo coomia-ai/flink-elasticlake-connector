@@ -1,0 +1,11 @@
+gradle.afterProject { project ->
+    if (project.path == ':flink-connector') {
+        project.dependencies.add('testImplementation', project.rootProject.foundationCatalog.findLibrary('elasticlake-architecture-rules').get())
+        ['testCompileClasspath', 'testRuntimeClasspath'].each { name ->
+            def configuration = project.configurations.getByName(name)
+            // Reach the isolation guard rather than failing first on JVM variant selection or locks.
+            configuration.attributes.attribute(org.gradle.api.attributes.java.TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+            configuration.resolutionStrategy.deactivateDependencyLocking()
+        }
+    }
+}

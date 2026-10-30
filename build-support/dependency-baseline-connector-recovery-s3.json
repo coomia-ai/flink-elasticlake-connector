@@ -1,0 +1,591 @@
+{
+    "schemaVersion": 1,
+    "project": ":connector-recovery-s3",
+    "artifacts": [
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit",
+            "version": "1.3.0",
+            "file": "archunit-1.3.0.jar",
+            "length": 4551970,
+            "sha256": "5362404cb595b31bd92a4d0faef40adcc4bd273da0c8811abef7fcc879e7cb26"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5",
+            "version": "1.3.0",
+            "file": "archunit-junit5-1.3.0.jar",
+            "length": 525,
+            "sha256": "39c34231eeaba7838139ca7f3a02f6011d9092b94d6151bfa4195caea265f60a"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5-api",
+            "version": "1.3.0",
+            "file": "archunit-junit5-api-1.3.0.jar",
+            "length": 5752,
+            "sha256": "c8f504c709c520e04617b320a7c819294be8d9164cfdcab62764e11f8607e815"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-architecture-rules",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-architecture-rules-0.1.0-SNAPSHOT.jar",
+            "length": 18081,
+            "sha256": "72676aa0bb69bd552b6f2ba0dc510d485292f3bcfc1b37789d329e2a1105a57a"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-client-api",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-client-api-0.1.0-SNAPSHOT.jar",
+            "length": 111088,
+            "sha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik",
+            "version": "1.8.4",
+            "file": "jqwik-1.8.4.jar",
+            "length": 520,
+            "sha256": "700547db7ff2fcf2bdd07ca5fc9f9033da6380a5b839cc850b4363a3e3c3e607"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-api",
+            "version": "1.8.4",
+            "file": "jqwik-api-1.8.4.jar",
+            "length": 268631,
+            "sha256": "6d1c30747baf1eba19224a440f489df0147f476c3a9091830d985bcfe3cd30b2"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-time",
+            "version": "1.8.4",
+            "file": "jqwik-time-1.8.4.jar",
+            "length": 243407,
+            "sha256": "23e6d6726b08fa16afc66cd951b6d1b7d18e6a13eefc252221b3567bc13d0b9d"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-web",
+            "version": "1.8.4",
+            "file": "jqwik-web-1.8.4.jar",
+            "length": 13336,
+            "sha256": "78480271531149e824f5f7ed16be96804ed1ac24e1e7575b638cf5d8ecf84f14"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.apiguardian",
+            "module": "apiguardian-api",
+            "version": "1.1.2",
+            "file": "apiguardian-api-1.1.2.jar",
+            "length": 6806,
+            "sha256": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter",
+            "version": "5.10.2",
+            "file": "junit-jupiter-5.10.2.jar",
+            "length": 6359,
+            "sha256": "263e43447f4b40f126ad6b1dcbd7df379448413bdedb8e0d240c5bcbba7c7a4f"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-api",
+            "version": "5.10.2",
+            "file": "junit-jupiter-api-5.10.2.jar",
+            "length": 210956,
+            "sha256": "afff77c186cd317275803872fa5133aa801fd6ac40bd91c78a6cf8009b4b17cc"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-params",
+            "version": "5.10.2",
+            "file": "junit-jupiter-params-5.10.2.jar",
+            "length": 586027,
+            "sha256": "edb1e43ff0b8067626ffb55e5e9eeca1d9ab2478141a7c7f253d115b29cc7cf2"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-commons",
+            "version": "1.10.2",
+            "file": "junit-platform-commons-1.10.2.jar",
+            "length": 106232,
+            "sha256": "b56a5ec000a479df4973b18bba24c98fe0db8faa14c8907d3ef451d8c71fd8ae"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.opentest4j",
+            "module": "opentest4j",
+            "version": "1.3.0",
+            "file": "opentest4j-1.3.0.jar",
+            "length": 14304,
+            "sha256": "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b"
+        },
+        {
+            "configuration": "architectureTestCompileClasspath",
+            "group": "org.slf4j",
+            "module": "slf4j-api",
+            "version": "2.0.12",
+            "file": "slf4j-api-2.0.12.jar",
+            "length": 68115,
+            "sha256": "a79502b8abdfbd722846a27691226a4088682d6d35654f9b80e2a9ccacf7ed47"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit",
+            "version": "1.3.0",
+            "file": "archunit-1.3.0.jar",
+            "length": 4551970,
+            "sha256": "5362404cb595b31bd92a4d0faef40adcc4bd273da0c8811abef7fcc879e7cb26"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5",
+            "version": "1.3.0",
+            "file": "archunit-junit5-1.3.0.jar",
+            "length": 525,
+            "sha256": "39c34231eeaba7838139ca7f3a02f6011d9092b94d6151bfa4195caea265f60a"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5-api",
+            "version": "1.3.0",
+            "file": "archunit-junit5-api-1.3.0.jar",
+            "length": 5752,
+            "sha256": "c8f504c709c520e04617b320a7c819294be8d9164cfdcab62764e11f8607e815"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5-engine",
+            "version": "1.3.0",
+            "file": "archunit-junit5-engine-1.3.0.jar",
+            "length": 55132,
+            "sha256": "0f967428f2f6fa52fbaecfbe46db8b7a694c4ac27a1ebd96dc053aba644f0afe"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "com.tngtech.archunit",
+            "module": "archunit-junit5-engine-api",
+            "version": "1.3.0",
+            "file": "archunit-junit5-engine-api-1.3.0.jar",
+            "length": 4634,
+            "sha256": "0c83e4e2747fb1f06e95753954e16b80c10bdf378e9b98bd00c0067f6feb9551"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-architecture-rules",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-architecture-rules-0.1.0-SNAPSHOT.jar",
+            "length": 18081,
+            "sha256": "72676aa0bb69bd552b6f2ba0dc510d485292f3bcfc1b37789d329e2a1105a57a"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-client-api",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-client-api-0.1.0-SNAPSHOT.jar",
+            "length": 111088,
+            "sha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik",
+            "version": "1.8.4",
+            "file": "jqwik-1.8.4.jar",
+            "length": 520,
+            "sha256": "700547db7ff2fcf2bdd07ca5fc9f9033da6380a5b839cc850b4363a3e3c3e607"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-api",
+            "version": "1.8.4",
+            "file": "jqwik-api-1.8.4.jar",
+            "length": 268631,
+            "sha256": "6d1c30747baf1eba19224a440f489df0147f476c3a9091830d985bcfe3cd30b2"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-engine",
+            "version": "1.8.4",
+            "file": "jqwik-engine-1.8.4.jar",
+            "length": 857274,
+            "sha256": "f0a99d87d70c95c603148963892fdaff427a6177a581f207adb38e47403884a6"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-time",
+            "version": "1.8.4",
+            "file": "jqwik-time-1.8.4.jar",
+            "length": 243407,
+            "sha256": "23e6d6726b08fa16afc66cd951b6d1b7d18e6a13eefc252221b3567bc13d0b9d"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-web",
+            "version": "1.8.4",
+            "file": "jqwik-web-1.8.4.jar",
+            "length": 13336,
+            "sha256": "78480271531149e824f5f7ed16be96804ed1ac24e1e7575b638cf5d8ecf84f14"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.apiguardian",
+            "module": "apiguardian-api",
+            "version": "1.1.2",
+            "file": "apiguardian-api-1.1.2.jar",
+            "length": 6806,
+            "sha256": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter",
+            "version": "5.10.2",
+            "file": "junit-jupiter-5.10.2.jar",
+            "length": 6359,
+            "sha256": "263e43447f4b40f126ad6b1dcbd7df379448413bdedb8e0d240c5bcbba7c7a4f"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-api",
+            "version": "5.10.2",
+            "file": "junit-jupiter-api-5.10.2.jar",
+            "length": 210956,
+            "sha256": "afff77c186cd317275803872fa5133aa801fd6ac40bd91c78a6cf8009b4b17cc"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-engine",
+            "version": "5.10.2",
+            "file": "junit-jupiter-engine-5.10.2.jar",
+            "length": 244690,
+            "sha256": "b6df35da750a546ae932376f11b3c0df841f0c90c7cb2944cd39adb432886e4b"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-params",
+            "version": "5.10.2",
+            "file": "junit-jupiter-params-5.10.2.jar",
+            "length": 586027,
+            "sha256": "edb1e43ff0b8067626ffb55e5e9eeca1d9ab2478141a7c7f253d115b29cc7cf2"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-commons",
+            "version": "1.10.2",
+            "file": "junit-platform-commons-1.10.2.jar",
+            "length": 106232,
+            "sha256": "b56a5ec000a479df4973b18bba24c98fe0db8faa14c8907d3ef451d8c71fd8ae"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-engine",
+            "version": "1.10.2",
+            "file": "junit-platform-engine-1.10.2.jar",
+            "length": 204821,
+            "sha256": "905cba9b4998ccc29d1239085a7fb1fe0e28024d7526152356d810edec0a49a3"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-launcher",
+            "version": "1.10.2",
+            "file": "junit-platform-launcher-1.10.2.jar",
+            "length": 183814,
+            "sha256": "aed4f42fb90ada9b347c231f13656fc09121ba20dab6dc646a6bd9d4da31e4aa"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.opentest4j",
+            "module": "opentest4j",
+            "version": "1.3.0",
+            "file": "opentest4j-1.3.0.jar",
+            "length": 14304,
+            "sha256": "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b"
+        },
+        {
+            "configuration": "architectureTestRuntimeClasspath",
+            "group": "org.slf4j",
+            "module": "slf4j-api",
+            "version": "2.0.13",
+            "file": "slf4j-api-2.0.13.jar",
+            "length": 68605,
+            "sha256": "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9"
+        },
+        {
+            "configuration": "compileClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-client-api",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-client-api-0.1.0-SNAPSHOT.jar",
+            "length": 111088,
+            "sha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-client-api",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-client-api-0.1.0-SNAPSHOT.jar",
+            "length": 111088,
+            "sha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik",
+            "version": "1.8.4",
+            "file": "jqwik-1.8.4.jar",
+            "length": 520,
+            "sha256": "700547db7ff2fcf2bdd07ca5fc9f9033da6380a5b839cc850b4363a3e3c3e607"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-api",
+            "version": "1.8.4",
+            "file": "jqwik-api-1.8.4.jar",
+            "length": 268631,
+            "sha256": "6d1c30747baf1eba19224a440f489df0147f476c3a9091830d985bcfe3cd30b2"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-time",
+            "version": "1.8.4",
+            "file": "jqwik-time-1.8.4.jar",
+            "length": 243407,
+            "sha256": "23e6d6726b08fa16afc66cd951b6d1b7d18e6a13eefc252221b3567bc13d0b9d"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-web",
+            "version": "1.8.4",
+            "file": "jqwik-web-1.8.4.jar",
+            "length": 13336,
+            "sha256": "78480271531149e824f5f7ed16be96804ed1ac24e1e7575b638cf5d8ecf84f14"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.apiguardian",
+            "module": "apiguardian-api",
+            "version": "1.1.2",
+            "file": "apiguardian-api-1.1.2.jar",
+            "length": 6806,
+            "sha256": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter",
+            "version": "5.10.2",
+            "file": "junit-jupiter-5.10.2.jar",
+            "length": 6359,
+            "sha256": "263e43447f4b40f126ad6b1dcbd7df379448413bdedb8e0d240c5bcbba7c7a4f"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-api",
+            "version": "5.10.2",
+            "file": "junit-jupiter-api-5.10.2.jar",
+            "length": 210956,
+            "sha256": "afff77c186cd317275803872fa5133aa801fd6ac40bd91c78a6cf8009b4b17cc"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-params",
+            "version": "5.10.2",
+            "file": "junit-jupiter-params-5.10.2.jar",
+            "length": 586027,
+            "sha256": "edb1e43ff0b8067626ffb55e5e9eeca1d9ab2478141a7c7f253d115b29cc7cf2"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-commons",
+            "version": "1.10.2",
+            "file": "junit-platform-commons-1.10.2.jar",
+            "length": 106232,
+            "sha256": "b56a5ec000a479df4973b18bba24c98fe0db8faa14c8907d3ef451d8c71fd8ae"
+        },
+        {
+            "configuration": "testCompileClasspath",
+            "group": "org.opentest4j",
+            "module": "opentest4j",
+            "version": "1.3.0",
+            "file": "opentest4j-1.3.0.jar",
+            "length": 14304,
+            "sha256": "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "io.elasticlake",
+            "module": "elasticlake-client-api",
+            "version": "0.1.0-SNAPSHOT",
+            "file": "elasticlake-client-api-0.1.0-SNAPSHOT.jar",
+            "length": 111088,
+            "sha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik",
+            "version": "1.8.4",
+            "file": "jqwik-1.8.4.jar",
+            "length": 520,
+            "sha256": "700547db7ff2fcf2bdd07ca5fc9f9033da6380a5b839cc850b4363a3e3c3e607"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-api",
+            "version": "1.8.4",
+            "file": "jqwik-api-1.8.4.jar",
+            "length": 268631,
+            "sha256": "6d1c30747baf1eba19224a440f489df0147f476c3a9091830d985bcfe3cd30b2"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-engine",
+            "version": "1.8.4",
+            "file": "jqwik-engine-1.8.4.jar",
+            "length": 857274,
+            "sha256": "f0a99d87d70c95c603148963892fdaff427a6177a581f207adb38e47403884a6"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-time",
+            "version": "1.8.4",
+            "file": "jqwik-time-1.8.4.jar",
+            "length": 243407,
+            "sha256": "23e6d6726b08fa16afc66cd951b6d1b7d18e6a13eefc252221b3567bc13d0b9d"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "net.jqwik",
+            "module": "jqwik-web",
+            "version": "1.8.4",
+            "file": "jqwik-web-1.8.4.jar",
+            "length": 13336,
+            "sha256": "78480271531149e824f5f7ed16be96804ed1ac24e1e7575b638cf5d8ecf84f14"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.apiguardian",
+            "module": "apiguardian-api",
+            "version": "1.1.2",
+            "file": "apiguardian-api-1.1.2.jar",
+            "length": 6806,
+            "sha256": "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter",
+            "version": "5.10.2",
+            "file": "junit-jupiter-5.10.2.jar",
+            "length": 6359,
+            "sha256": "263e43447f4b40f126ad6b1dcbd7df379448413bdedb8e0d240c5bcbba7c7a4f"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-api",
+            "version": "5.10.2",
+            "file": "junit-jupiter-api-5.10.2.jar",
+            "length": 210956,
+            "sha256": "afff77c186cd317275803872fa5133aa801fd6ac40bd91c78a6cf8009b4b17cc"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-engine",
+            "version": "5.10.2",
+            "file": "junit-jupiter-engine-5.10.2.jar",
+            "length": 244690,
+            "sha256": "b6df35da750a546ae932376f11b3c0df841f0c90c7cb2944cd39adb432886e4b"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.jupiter",
+            "module": "junit-jupiter-params",
+            "version": "5.10.2",
+            "file": "junit-jupiter-params-5.10.2.jar",
+            "length": 586027,
+            "sha256": "edb1e43ff0b8067626ffb55e5e9eeca1d9ab2478141a7c7f253d115b29cc7cf2"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-commons",
+            "version": "1.10.2",
+            "file": "junit-platform-commons-1.10.2.jar",
+            "length": 106232,
+            "sha256": "b56a5ec000a479df4973b18bba24c98fe0db8faa14c8907d3ef451d8c71fd8ae"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-engine",
+            "version": "1.10.2",
+            "file": "junit-platform-engine-1.10.2.jar",
+            "length": 204821,
+            "sha256": "905cba9b4998ccc29d1239085a7fb1fe0e28024d7526152356d810edec0a49a3"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.junit.platform",
+            "module": "junit-platform-launcher",
+            "version": "1.10.2",
+            "file": "junit-platform-launcher-1.10.2.jar",
+            "length": 183814,
+            "sha256": "aed4f42fb90ada9b347c231f13656fc09121ba20dab6dc646a6bd9d4da31e4aa"
+        },
+        {
+            "configuration": "testRuntimeClasspath",
+            "group": "org.opentest4j",
+            "module": "opentest4j",
+            "version": "1.3.0",
+            "file": "opentest4j-1.3.0.jar",
+            "length": 14304,
+            "sha256": "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b"
+        }
+    ]
+}

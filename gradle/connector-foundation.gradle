@@ -1,0 +1,202 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+
+apply from: rootProject.file('gradle/candidate-verification.gradle')
+ext.foundationCatalog = extensions.getByType(org.gradle.api.artifacts.VersionCatalogsExtension).named('libs')
+
+def probe = providers.gradleProperty('nonProductProbe').orElse('false').get() == 'true'
+def productSources = subprojects.any { module ->
+    !module.fileTree('src/main/java').matching { include '**/*.java'; exclude '**/package-info.java' }.empty
+}
+ext.connectorFoundationEnabled = probe || productSources || providers.gradleProperty('enableConnectorFoundation').orElse('false').get() == 'true'
+ext.connectorFoundationProbe = probe
+if (providers.gradleProperty('sdkSourceRoot').present) {
+    throw new GradleException('Source substitution is not an artifact verification path; sdkSourceRoot is not enabled')
+}
+
+ext.loadFoundationCandidate = { String prefix, String stage ->
+    def required = ['Repository', 'Manifest', 'ManifestSha256']
+    required.each { suffix ->
+        if (!providers.gradleProperty(prefix + suffix).present) throw new GradleException("Explicit ${prefix + suffix} is required")
+    }
+    def repository = file(providers.gradleProperty(prefix + 'Repository').get())
+    def manifestFile = file(providers.gradleProperty(prefix + 'Manifest').get())
+    def trusted = providers.gradleProperty(prefix + 'ManifestSha256').get()
+    if (!(trusted ==~ /[0-9a-f]{64}/) || !manifestFile.file || candidateSha256(manifestFile) != trusted) {
+        throw new GradleException("Trusted ${prefix} manifest SHA mismatch: ${manifestFile}")
+    }
+    def data = verifyCandidate(repository, manifestFile, stage, false)
+    def versionKey = prefix == 'sdk' ? 'sdk' : 'architecture-rules'
+    if (data.version != foundationCatalog.findVersion(versionKey).get().requiredVersion) throw new GradleException("${prefix} candidate/catalog version mismatch")
+    [repository: repository, manifestFile: manifestFile, data: data]
+}
+
+if (connectorFoundationEnabled) {
+    ext.foundationSdk = loadFoundationCandidate('sdk', providers.gradleProperty('sdkStage').orElse('api-only').get())
+    if (!(foundationSdk.data.stage in ['api-only', 'full-sdk'])) throw new GradleException('Unsupported SDK stage')
+}
+
+tasks.register('verifySdkCandidate') {
+    group = 'verification'
+    doLast {
+        if (!connectorFoundationEnabled) throw new GradleException('Enable Connector foundation before SDK verification')
+        loadFoundationCandidate('sdk', foundationSdk.data.stage)
+    }
+}
+tasks.register('verifyRulesCandidate') {
+    group = 'verification'
+    doLast { loadFoundationCandidate('rules', 'architecture-rules') }
+}
+
+if (probe) allprojects { version = '0.1.0-I06-PROBE' }
+
+ext.verifyFoundationResolved = { owner, configuration, boolean architecture ->
+    if (configuration.allDependencies.any { it instanceof org.gradle.api.artifacts.FileCollectionDependency }) {
+        throw new GradleException("Bare file dependencies are forbidden in ${configuration}")
+    }
+    configuration.incoming.resolutionResult.allComponents.each { component ->
+        def id = component.id
+        if (id instanceof org.gradle.api.artifacts.component.ProjectComponentIdentifier && id.projectPath != owner.path) {
+            if (!(owner.path == ':connector-recovery-s3' && id.projectPath == ':flink-connector')) {
+                throw new GradleException("Unexpected project dependency in ${configuration}: ${id}")
+            }
+        }
+    }
+    configuration.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+        def id = artifact.moduleVersion.id
+        if (artifact.id.componentIdentifier instanceof org.gradle.api.artifacts.component.ProjectComponentIdentifier) {
+            if (artifact.classifier != 'logical-api') throw new GradleException("Provider resolved a full Connector artifact: ${artifact.file}")
+        } else if (id.group == 'io.elasticlake') {
+            def prefix = id.name == 'elasticlake-architecture-rules' ? 'rules' : 'sdk'
+            if (!architecture && prefix == 'rules') throw new GradleException("Architecture artifact leaked into ${configuration}")
+            def candidate = prefix == 'rules' ? loadFoundationCandidate('rules', 'architecture-rules') : foundationSdk
+            if (!candidate.data.artifacts.contains(id.name) || id.version != candidate.data.version ||
+                !candidate.data.files.any { it.path.endsWith('.jar') && it.length == artifact.file.length() && it.sha256 == candidateSha256(artifact.file) }) {
+                throw new GradleException("Resolved candidate differs from sealed bytes: ${configuration}:${id}")
+            }
+        } else if (id.group.contains('paimon') || id.group.contains('lucene') || id.name in ['server', 'core-api', 'storage-s3']) {
+            throw new GradleException("Database dependency forbidden in Connector: ${configuration}:${id}")
+        } else if (!architecture && id.group.startsWith('com.tngtech.archunit')) {
+            throw new GradleException("ArchUnit leaked into ordinary/production configuration: ${configuration}")
+        }
+    }
+}
+
+tasks.register('verifyFoundationTaskGraph') {
+    group = 'verification'
+    doLast {
+        def entries = gradle.taskGraph.allTasks.collect { task ->
+            [task: task.path, dependencies: gradle.taskGraph.getDependencies(task).collect { it.path }.sort()]
+        }
+        def output = layout.buildDirectory.file('reports/foundation-task-graph.json').get().asFile
+        output.parentFile.mkdirs()
+        output.text = JsonOutput.prettyPrint(JsonOutput.toJson(entries)) + '\n'
+    }
+}
+
+def foundationInputs = {
+    def inputs = files('settings.gradle.kts', 'build.gradle.kts', 'gradle.properties', 'settings-gradle.lockfile', 'AGENTS.md',
+        'gradlew', 'gradlew.bat', 'LICENSE', 'NOTICE', fileTree('gradle'), fileTree('build-support'),
+        subprojects.collectMany { module ->
+            [module.file('build.gradle.kts'), module.file('gradle.lockfile'), module.fileTree('src'),
+             module.sourceSets.main.allSource, module.sourceSets.test.allSource] +
+                (module.sourceSets.findByName('connectorApi') != null ? [module.sourceSets.connectorApi.allSource] : [])
+        }, gradle.startParameter.allInitScripts)
+    inputs.files.findAll { it.file }.collect { input ->
+        if (!input.toPath().toAbsolutePath().normalize().startsWith(rootDir.toPath().toAbsolutePath().normalize())) {
+            throw new GradleException('Candidate input is outside the repository; copy and review it before publication')
+        }
+        [path: relativePath(input).replace('\\', '/'), length: input.length(), sha256: candidateSha256(input)]
+    }.sort { a, b -> a.path <=> b.path }
+}
+def foundationCandidateRoot = {
+    def id = providers.gradleProperty('candidateId').orNull
+    if (!id || !(id ==~ /[A-Za-z0-9][A-Za-z0-9._-]*/)) throw new GradleException('A safe fresh candidateId is required')
+    layout.buildDirectory.dir("foundation-candidates/${id}").get().asFile
+}
+ext.foundationCandidateDirectory = foundationCandidateRoot
+tasks.register('captureConnectorFoundationInputs') {
+    dependsOn('verifySdkCandidate', 'verifyRulesCandidate')
+    doLast {
+        if (!connectorFoundationProbe) throw new GradleException('Foundation publication requires nonProductProbe=true')
+        def directory = foundationCandidateRoot()
+        if (directory.exists()) throw new GradleException('Foundation candidate exists; never overwrite')
+        directory.mkdirs()
+        new File(directory, 'inputs.json').text = JsonOutput.toJson([
+            sourceInputs: foundationInputs(), sdkManifestSha256: providers.gradleProperty('sdkManifestSha256').get(),
+            rulesManifestSha256: providers.gradleProperty('rulesManifestSha256').get()])
+    }
+}
+tasks.register('prepareConnectorFoundationCandidate') {
+    dependsOn('captureConnectorFoundationInputs', 'verifySdkCandidate', 'verifyRulesCandidate')
+    doLast { new File(foundationCandidateRoot(), 'repository').mkdirs() }
+}
+tasks.register('sealConnectorFoundationCandidate') {
+    dependsOn(':flink-connector:publishConnectorPublicationToFoundationRepository',
+        ':connector-recovery-s3:publishConnectorPublicationToFoundationRepository', 'check', 'verifyFoundationTaskGraph')
+    dependsOn(':flink-connector:verifyConnectorFoundationDependencies', ':connector-recovery-s3:verifyConnectorFoundationDependencies')
+    dependsOn(':flink-connector:preserveConnectorFoundationEvidence', ':connector-recovery-s3:preserveConnectorFoundationEvidence')
+    doLast {
+        def directory = foundationCandidateRoot()
+        def original = new JsonSlurper().parse(new File(directory, 'inputs.json'))
+        if (candidateValueSha256(original.sourceInputs) != candidateValueSha256(foundationInputs())) {
+            throw new GradleException('Connector source/build/lock inputs changed after capture')
+        }
+        def sdkAtSeal = loadFoundationCandidate('sdk', foundationSdk.data.stage)
+        def rulesAtSeal = loadFoundationCandidate('rules', 'architecture-rules')
+        if (candidateSha256(sdkAtSeal.manifestFile) != original.sdkManifestSha256 ||
+            candidateSha256(rulesAtSeal.manifestFile) != original.rulesManifestSha256) {
+            throw new GradleException('Original trusted SDK/rules manifest changed after capture')
+        }
+        def dependencyArtifacts = subprojects.collectMany { module ->
+            def snapshot = new JsonSlurper().parse(new File(directory, "dependencies/${module.name}.json"))
+            def baseline = new JsonSlurper().parse(file("build-support/dependency-baseline-${module.name}.json"))
+            if (snapshot.project != module.path || snapshot.sdkManifestSha256 != original.sdkManifestSha256 ||
+                snapshot.rulesManifestSha256 != original.rulesManifestSha256) throw new GradleException('Module dependency input binding mismatch')
+            snapshot.artifacts.collect { artifact ->
+                def resolved = new File(artifact.resolvedPath)
+                if (!resolved.file || resolved.length() != artifact.length || candidateSha256(resolved) != artifact.sha256) {
+                    throw new GradleException("Actual dependency bytes changed after compilation: ${module.path}:${artifact.configuration}:${artifact.file}")
+                }
+                if (artifact.componentType != 'project' && !baseline.artifacts.any {
+                    it.configuration == artifact.configuration && it.group == artifact.group && it.module == artifact.module &&
+                        it.version == artifact.version && it.file == artifact.file && it.length == artifact.length && it.sha256 == artifact.sha256
+                }) throw new GradleException('Captured dependency differs from source-bound byte baseline')
+                def entry = new LinkedHashMap(artifact)
+                entry.remove('resolvedPath')
+                entry.project = module.path
+                entry
+            }
+        }.sort { a, b -> JsonOutput.toJson(a) <=> JsonOutput.toJson(b) }
+        def repository = new File(directory, 'repository')
+        def files = fileTree(repository).files.collect { input ->
+            [path: repository.toPath().relativize(input.toPath()).toString().replace('\\', '/'), length: input.length(), sha256: candidateSha256(input)]
+        }.sort { a, b -> a.path <=> b.path }
+        def evidenceDirectory = new File(directory, 'evidence')
+        copy { from layout.buildDirectory.file('reports/foundation-task-graph.json'); into evidenceDirectory }
+        def evidenceFiles = fileTree(evidenceDirectory).files.collect { input ->
+            [path: evidenceDirectory.toPath().relativize(input.toPath()).toString().replace('\\', '/'),
+             length: input.length(), sha256: candidateSha256(input)]
+        }.sort { a, b -> a.path <=> b.path }
+        def data = [schemaVersion: 1, candidateRevision: 2, stage: 'connector-foundation', nonProductProbe: true,
+            candidateId: providers.gradleProperty('candidateId').get(), version: project.version.toString(),
+            contractRevision: '3.0-draft.3', sdkManifestSha256: original.sdkManifestSha256,
+            rulesManifestSha256: original.rulesManifestSha256,
+            sourceInputs: original.sourceInputs, sourceInputsSha256: candidateValueSha256(original.sourceInputs),
+            dependencyArtifacts: dependencyArtifacts, dependencyArtifactsSha256: candidateValueSha256(dependencyArtifacts),
+            files: files, evidenceFiles: evidenceFiles, foundationAccepted: false, productAccepted: false]
+        new File(directory, 'connector-candidate.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(data)) + '\n'
+    }
+}
+tasks.register('publishConnectorFoundation') {
+    group = 'publishing'
+    dependsOn('sealConnectorFoundationCandidate')
+}
+
+tasks.register('prepareFoundationConsumer', Copy) {
+    into(layout.buildDirectory.dir('foundation-consumer'))
+    from('build-support/consumer')
+    from('gradle/candidate-verification.gradle')
+}
+
+apply from: rootProject.file('gradle/connector-negative-controls.gradle')

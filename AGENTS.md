@@ -3,10 +3,12 @@
 This is an independent Connector repository. Read [README.md](README.md),
 [development conventions](docs/development.md), and
 [the initialization record](docs/development/bootstrap.md) before editing.
+For build or SDK artifact work also read [the Connector foundation record](docs/development/csn-i/I-06.md).
+Foundation fixtures are explicitly non-product code; they do not approve Connector API/runtime behavior.
 
 ## Scope and Authority
 
-- The current repository is a scaffold. Do not implement or claim an approved Sink,
+- The current repository has a logical API implementation; Sink runtime is pending. Do not implement or claim an approved Sink,
   recovery protocol, SDK ABI, or serializer from candidate reference signatures.
   Read the relevant current upstream SPEC and its blocking reviews before behavior work.
 - Upstream design sources and initialization hashes are recorded in

@@ -1,0 +1,90 @@
+import groovy.json.JsonSlurper
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
+
+ext.verifyConnectorApiCandidate = { File repository, File manifestFile, String trustedSha, String trustedSdkSha ->
+    def require = { boolean condition, String message -> if (!condition) throw new GradleException(message) }
+    require(repository.directory && manifestFile.file, 'Missing logical API repository/manifest')
+    require(trustedSha ==~ /[0-9a-f]{64}/ && candidateSha256(manifestFile) == trustedSha, 'Logical API trusted manifest SHA differs')
+    def m = new JsonSlurper().parse(manifestFile)
+    require(m.schemaVersion == 1 && m.stage == 'connector-logical-api' && m.nonProductProbe == false &&
+        m.contractRevision == '3.0-draft.3' && m.candidateId && m.classifier == 'logical-api' &&
+        m.version == '0.1.0-SNAPSHOT' && m.sdkVersion == '0.1.0-SNAPSHOT' && m.sdkManifestSha256 == trustedSdkSha &&
+        m.artifacts == ['elasticlake-flink-connector-1.20'], 'Logical API identity/SDK/variant differs')
+    require(m.abiSha256 == '12a645479068ab21f9b3ef20aa799f1704338589ccb515a15cb20e5e8169ce03', 'Logical API ABI SHA differs')
+    require(m.strictAbiSha256 == 'f51c19c10f533f450d99ca36370bfde28b7f1a4f71d7c318f8a3a2e94bcfee82', 'Logical API strict ABI SHA differs')
+    def safe = { entry -> entry.path instanceof String && entry.path && !entry.path.startsWith('/') &&
+        !entry.path.contains('..') && !entry.path.contains('\\') && !entry.path.contains(':') &&
+        entry.length instanceof Number && entry.length.longValue() >= 0 && entry.sha256 ==~ /[0-9a-f]{64}/ }
+    [sourceInputs: 'sourceInputsSha256', classFiles: 'classFilesSha256', dependencyArtifacts: 'dependencyArtifactsSha256'].each { name, digest ->
+        def entries = m[name]
+        require(entries instanceof List && !entries.empty && candidateValueSha256(entries) == m[digest], "Logical API ${name} aggregate differs")
+        if (name != 'dependencyArtifacts') {
+            require(entries.every(safe) && entries*.path.size() == entries*.path.toSet().size(), "Logical API ${name} entries differ")
+        } else {
+            def keys = entries.collect { [it.project, it.configuration, it.group, it.module, it.version, it.file] }
+            require(entries.every { it.sha256 ==~ /[0-9a-f]{64}/ && it.length instanceof Number && it.length >= 0 } && keys.size() == keys.toSet().size(), 'Logical API dependency entries differ')
+        }
+    }
+    def inventory = { File base, entries, String label ->
+        require(entries instanceof List && !entries.empty && entries.every(safe) && entries*.path.size() == entries*.path.toSet().size(), "Logical API ${label} inventory malformed")
+        def actual = fileTree(base).files.collect { base.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.toSet()
+        require(actual == entries*.path.toSet(), "Logical API ${label} inventory differs")
+        entries.each { e -> def f = new File(base, e.path); require(f.length() == e.length && candidateSha256(f) == e.sha256, "Logical API ${label} SHA/length differs: ${e.path}") }
+    }
+    inventory(repository, m.files, 'repository')
+    inventory(new File(manifestFile.parentFile, 'evidence'), m.evidenceFiles, 'evidence')
+    def factory = DocumentBuilderFactory.newInstance()
+    factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+    def direct = { node, String name -> (0..<node.childNodes.length).collect { node.childNodes.item(it) }.find { it.nodeName == name }?.textContent }
+    def prefix = "io/elasticlake/elasticlake-flink-connector-1.20/${m.version}/"
+    def files = m.files.findAll { it.path.startsWith(prefix) }
+    def poms = files.findAll { it.path.endsWith('.pom') }
+    def modules = files.findAll { it.path.endsWith('.module') }
+    def jars = files.findAll { it.path.endsWith('.jar') }
+    require(poms.size() == 1 && modules.size() == 1 && jars.size() == 1 && jars[0].path.endsWith('-logical-api.jar'), 'Logical API classifier/artifact set differs')
+    def metadata = factory.newDocumentBuilder().parse(new File(repository, prefix + 'maven-metadata.xml'))
+    def metaRoot = metadata.documentElement
+    require(direct(metaRoot, 'groupId') == 'io.elasticlake' && direct(metaRoot, 'artifactId') == 'elasticlake-flink-connector-1.20' && direct(metaRoot, 'version') == m.version, 'Logical API snapshot coordinates differ')
+    def mappings = [:]
+    def snapshots = metadata.getElementsByTagName('snapshotVersion')
+    for (int i = 0; i < snapshots.length; i++) {
+        def item = snapshots.item(i)
+        def classifier = direct(item, 'classifier')
+        def suffix = (classifier ? "-${classifier}" : '') + '.' + direct(item, 'extension')
+        def symbolic = "elasticlake-flink-connector-1.20-${m.version}${suffix}"
+        require(!mappings.containsKey(symbolic), 'Duplicate logical API snapshot mapping')
+        def actual = "elasticlake-flink-connector-1.20-${direct(item, 'value')}${suffix}"
+        require(new File(repository, prefix + actual).file, 'Missing logical API snapshot mapping target')
+        mappings[symbolic] = actual
+    }
+    def pom = factory.newDocumentBuilder().parse(new File(repository, poms[0].path))
+    require(direct(pom.documentElement, 'groupId') == 'io.elasticlake' && direct(pom.documentElement, 'artifactId') == 'elasticlake-flink-connector-1.20' && direct(pom.documentElement, 'version') == m.version, 'Logical API POM coordinates differ')
+    def pomDependencies = pom.getElementsByTagName('dependency')
+    require(pomDependencies.length == 1, 'Logical API POM dependency set differs')
+    def dep = pomDependencies.item(0)
+    require(direct(dep, 'groupId') == 'io.elasticlake' && direct(dep, 'artifactId') == 'elasticlake-client-api' && direct(dep, 'version') == m.sdkVersion, 'Logical API POM SDK differs')
+    def module = new JsonSlurper().parse(new File(repository, modules[0].path))
+    require(module.component.group == 'io.elasticlake' && module.component.module == 'elasticlake-flink-connector-1.20' && module.component.version == m.version && module.variants.size() == 1, 'Logical API module coordinates/variants differ')
+    def variant = module.variants[0]
+    require(variant.name == 'connectorApiElements' && variant.attributes['io.elasticlake.connector.surface'] == 'logical-api' && variant.attributes['org.gradle.jvm.version'] == 17 && variant.attributes['org.gradle.usage'] == 'java-runtime' && variant.files.size() == 1 && variant.dependencies.size() == 1, 'Logical API variant metadata differs')
+    def dependency = variant.dependencies[0]
+    require(dependency.group == 'io.elasticlake' && dependency.module == 'elasticlake-client-api' && dependency.version.requires == m.sdkVersion, 'Logical API module SDK differs')
+    def declared = variant.files[0]
+    require(!declared.url.contains('/') && !declared.url.contains('\\') && !declared.url.contains('..') && declared.url.endsWith('-logical-api.jar'), 'Logical API module classifier differs')
+    def jar = new File(repository, prefix + mappings.get(declared.url, declared.url))
+    require(jar.file && jar.length() == declared.size && candidateSha256(jar) == declared.sha256, 'Logical API module file SHA differs')
+    new ZipFile(jar).withCloseable { archive ->
+        def entries = archive.entries().findAll { it.name.endsWith('.class') }
+        require(entries*.name.toSet() == m.classFiles*.path.toSet() && entries.size() == m.classFiles.size(), 'Logical API class inventory differs')
+        entries.each { entry ->
+            require(entry.name.startsWith('io/elasticlake/connector/api/v3/'), 'Logical API contains implementation/runtime classes')
+            byte[] bytes = archive.getInputStream(entry).withCloseable { it.readAllBytes() }
+            def record = m.classFiles.find { it.path == entry.name }
+            def sha = java.security.MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+            require(bytes.length >= 8 && bytes[6] == 0 && (bytes[7] & 255) == 61 && bytes.length == record.length && sha == record.sha256, 'Logical API class bytes differ')
+        }
+        require(archive.getEntry('META-INF/LICENSE') != null && archive.getEntry('META-INF/NOTICE') != null, 'Logical API license files absent')
+    }
+    m
+}

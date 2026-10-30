@@ -6,7 +6,9 @@ English | [简体中文](development.zh-CN.md)
 
 Use JDK 17 or 21, `JAVA_HOME`, and the checked-in Gradle 8.12 wrapper. Java compilation
 uses `--release 17`. A JDK 21 build does not replace actual Java 17 execution evidence.
-No database, Docker, SDK checkout, or S3 credentials are needed to build the scaffold.
+API work consumes sealed SDK artifacts, not an SDK checkout. Database, Docker and
+S3 credentials are unnecessary for API tests; explicit SDK/rules paths and trusted
+hashes are described in [I-07-CONNECTOR](development/csn-i/I-07-CONNECTOR.md).
 
 | Task | Linux / macOS command |
 | --- | --- |
@@ -18,9 +20,9 @@ No database, Docker, SDK checkout, or S3 credentials are needed to build the sca
 | Inspect dependencies | `bash ./gradlew :flink-connector:dependencies` |
 | Regenerate dependency locks | `bash ./gradlew :flink-connector:dependencies :connector-recovery-s3:dependencies --write-locks` |
 
-On Windows replace `bash ./gradlew` with `.\gradlew.bat`. The `test` tasks currently
-have no test sources. JUnit 5 and jqwik are configured for future behavior tests.
-Do not add placeholder passing tests to disguise this status.
+On Windows replace `bash ./gradlew` with `.\gradlew.bat`. API tests cover constructor
+constraints and immutable values. Explicit foundation probes have separate linkage tests;
+they do not certify delivery or recovery behavior. JUnit 5 and jqwik are configured.
 
 ## Repository Layout
 
@@ -32,8 +34,9 @@ docs/                    Bilingual guides and initialization record
 .github/                 CI, dependency updates, issue and PR templates
 ```
 
-Source packages start with `io.elasticlake.connector`. The only current Java sources
-are package documentation. JARs include LICENSE/NOTICE and use reproducible entry
+Source packages start with `io.elasticlake.connector`. Production Java source
+directories contain package documentation; non-product fixtures live separately
+under `build-support/probes`. JARs include LICENSE/NOTICE and use reproducible entry
 ordering and timestamps. They are local scaffold outputs, not release candidates.
 Javadoc packaging will be enabled when approved public types exist; package-only
 namespaces currently have no public API to document.
@@ -53,19 +56,25 @@ bash ./gradlew -PpluginRepository=https://maven.aliyun.com/repository/gradle-plu
 ```
 
 Both properties are optional and affect build dependencies only. Defaults remain
-the official public repositories. Future SDK artifacts must use their separate,
-exclusive repository and verification contract.
+the official public repositories. SDK and shared rules use separate exclusive repositories.
 
-SDK artifact resolution is not wired yet. Before enabling it, implement the reviewed
-exact-version/manifest contract: an explicit isolated repository, exclusive SDK group
-resolution, SHA-256 and metadata verification, and no fallback. Local SDK SNAPSHOTs
-need isolated, sealed candidate repositories and verified manifests, rather than
-ordinary mutable dependency handling. Do not copy SDK DTOs into this repository.
+Opt-in foundation mode requires explicit `sdkRepository`, `sdkManifest` and
+`sdkManifestSha256` properties. A full foundation build also requires the corresponding
+`rulesRepository`, `rulesManifest` and `rulesManifestSha256`. Candidate verification
+checks exact versions, metadata, inventories and artifact bytes without fallback.
+The SDK API can compile independently without HTTP or architecture-rule artifacts.
+Do not copy SDK DTOs or substitute sibling sources.
 
-The shared Java 21 architecture-rule artifact and a separate `architectureTest`
-task remain future foundation work. The scaffold does not provide that task or
-claim an architecture gate passed. Rule code must stay out of ordinary Java 17
-tests, production classpaths, and published artifacts.
+`nonProductProbe=true` selects reviewed build fixtures and separate strict lockfiles.
+Java 17 compiles and runs ordinary tests; a separate Java 21 `architectureTest`
+executes six original shared rule groups against nonempty Java 17 outputs. Actual
+dependencies are captured before compilation and revalidated before sealing;
+original XML, class files and task graphs are archived with hashes. Local publication
+requires a fresh candidate ID and remains non-product. Rule code stays out of
+ordinary tests and production artifacts. The existing CI workflow has no sealed-input provisioning and will reject missing
+SDK inputs once API sources are present; see the [source delivery note](development/csn-i/SOURCE-DELIVERY-20261030.md).
+local foundation evidence is recorded separately in the
+[bilingual I-06 record](development/csn-i/I-06.md), including replay commands and open gates.
 
 ## Code and Review
 

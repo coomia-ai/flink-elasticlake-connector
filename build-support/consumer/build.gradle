@@ -1,0 +1,99 @@
+import groovy.json.JsonSlurper
+import java.util.zip.ZipFile
+import javax.xml.parsers.DocumentBuilderFactory
+
+plugins { id 'application' }
+apply from: 'candidate-verification.gradle'
+
+def trustedManifest = { String prefix ->
+    def file = file(providers.gradleProperty(prefix + 'Manifest').get())
+    def sha = providers.gradleProperty(prefix + 'ManifestSha256').get()
+    if (!(sha ==~ /[0-9a-f]{64}/) || !file.file || candidateSha256(file) != sha) throw new GradleException("Trusted ${prefix} manifest SHA mismatch")
+    file
+}
+def sdk = verifyCandidate(file(providers.gradleProperty('sdkRepository').get()), trustedManifest('sdk'), 'api-only', false)
+def connectorManifest = trustedManifest('connector')
+def connector = new JsonSlurper().parse(connectorManifest)
+if (connector.schemaVersion != 1 || connector.candidateRevision != 2 || connector.stage != 'connector-foundation' || connector.nonProductProbe != true ||
+    connector.contractRevision != '3.0-draft.3' || connector.version != '0.1.0-I06-PROBE' ||
+    connector.sdkManifestSha256 != candidateSha256(trustedManifest('sdk')) ||
+    candidateValueSha256(connector.sourceInputs) != connector.sourceInputsSha256 ||
+    !(connector.dependencyArtifacts instanceof List) || connector.dependencyArtifacts.empty ||
+    candidateValueSha256(connector.dependencyArtifacts) != connector.dependencyArtifactsSha256 ||
+    !(connector.evidenceFiles instanceof List) || connector.evidenceFiles.empty) throw new GradleException('Invalid foundation candidate identity/input binding')
+if (providers.gradleProperty('allowFoundationProbe').orElse('false').get() != 'true') {
+    throw new GradleException('Non-product Connector foundation probe is not a product candidate')
+}
+def repository = file(providers.gradleProperty('connectorRepository').get())
+def paths = connector.files.collect { it.path }
+if (paths.empty || paths.size() != paths.toSet().size() ||
+    fileTree(repository).files.collect { repository.toPath().relativize(it.toPath()).toString().replace('\\', '/') }.toSet() != paths.toSet()) {
+    throw new GradleException('Connector candidate inventory differs')
+}
+connector.files.each { entry ->
+    if (!(entry.path instanceof String) || entry.path.contains('..') || entry.path.contains('\\') || entry.path.contains(':') || entry.path.startsWith('/')) throw new GradleException('Unsafe Connector candidate path')
+    def artifact = new File(repository, entry.path)
+    if (!artifact.file || artifact.length() != entry.length || candidateSha256(artifact) != entry.sha256) throw new GradleException("Connector candidate SHA/length mismatch: ${entry.path}")
+}
+def factory = DocumentBuilderFactory.newInstance()
+factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+['elasticlake-flink-connector-1.20', 'elasticlake-connector-recovery-s3'].each { artifactId ->
+    def directory = new File(repository, "io/elasticlake/${artifactId}/${connector.version}")
+    def pom = new File(directory, "${artifactId}-${connector.version}.pom")
+    def moduleFile = new File(directory, "${artifactId}-${connector.version}.module")
+    if (!pom.file || !moduleFile.file) throw new GradleException("Missing Connector metadata: ${artifactId}")
+    def document = factory.newDocumentBuilder().parse(pom)
+    def root = document.documentElement
+    def child = { node, String key -> (0..<node.childNodes.length).collect { node.childNodes.item(it) }.find { it.nodeName == key }?.textContent }
+    if (child(root, 'groupId') != 'io.elasticlake' || child(root, 'artifactId') != artifactId || child(root, 'version') != connector.version) throw new GradleException('Connector POM coordinates mismatch')
+    def dependencies = document.getElementsByTagName('dependency')
+    for (int index = 0; index < dependencies.length; index++) {
+        def dependency = dependencies.item(index)
+        if (artifactId == 'elasticlake-connector-recovery-s3' || child(dependency, 'groupId') != 'io.elasticlake' ||
+            child(dependency, 'artifactId') != 'elasticlake-client-api' || child(dependency, 'version') != sdk.version) {
+            throw new GradleException("Forbidden published dependency: ${artifactId}")
+        }
+    }
+    def module = new JsonSlurper().parse(moduleFile)
+    if (module.component.group != 'io.elasticlake' || module.component.module != artifactId || module.component.version != connector.version) throw new GradleException('Connector module coordinates mismatch')
+    module.variants.each { variant ->
+        (variant.dependencies ?: []).each { dependency ->
+            if (artifactId == 'elasticlake-connector-recovery-s3' || dependency.group != 'io.elasticlake' ||
+                dependency.module != 'elasticlake-client-api' || dependency.version.requires != sdk.version) throw new GradleException('Forbidden Connector module dependency')
+        }
+        (variant.files ?: []).each { entry ->
+            if (entry.url.contains('/') || entry.url.contains('\\') || entry.url.contains('..')) throw new GradleException('Unsafe module file URL')
+            def artifact = new File(directory, entry.url)
+            if (!artifact.file || artifact.length() != entry.size || candidateSha256(artifact) != entry.sha256) throw new GradleException('Connector module file SHA mismatch')
+        }
+    }
+}
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+tasks.withType(JavaCompile).configureEach { options.release = 17 }
+application { mainClass = 'io.elasticlake.consumer.FoundationConsumer' }
+dependencies {
+    implementation "io.elasticlake:elasticlake-flink-connector-1.20:${connector.version}"
+    implementation "io.elasticlake:elasticlake-connector-recovery-s3:${connector.version}"
+}
+tasks.register('verifyResolvedFoundation') {
+    doLast {
+        def names = new HashSet<String>()
+        def expected = ['elasticlake-flink-connector-1.20', 'elasticlake-connector-recovery-s3', 'elasticlake-client-api'].toSet()
+        def seen = new HashSet<String>()
+        configurations.runtimeClasspath.resolvedConfiguration.resolvedArtifacts.each { artifact ->
+            def id = artifact.moduleVersion.id
+            if (id.group != 'io.elasticlake' || !expected.contains(id.name) || artifact.classifier != null) throw new GradleException("Unexpected installed artifact: ${id}")
+            def manifest = id.name == 'elasticlake-client-api' ? sdk : connector
+            if (!manifest.files.any { it.path.endsWith('.jar') && it.length == artifact.file.length() && it.sha256 == candidateSha256(artifact.file) }) throw new GradleException("Resolved Connector/SDK byte mismatch: ${id}")
+            seen.add(id.name)
+            new ZipFile(artifact.file).withCloseable { archive ->
+                archive.entries().findAll { it.name.endsWith('.class') }.each { entry ->
+                    byte[] bytes = archive.getInputStream(entry).withCloseable { it.readNBytes(8) }
+                    if (((bytes[6] & 255) << 8 | (bytes[7] & 255)) != 61 || !names.add(entry.name)) throw new GradleException("Wrong major or duplicate installed class: ${entry.name}")
+                }
+            }
+        }
+        if (seen != expected) throw new GradleException('Incomplete installed foundation/SDK set')
+    }
+}
+tasks.named('compileJava') { dependsOn('verifyResolvedFoundation') }

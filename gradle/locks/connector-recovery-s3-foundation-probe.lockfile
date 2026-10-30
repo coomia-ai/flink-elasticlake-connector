@@ -1,0 +1,36 @@
+# This is a Gradle generated file for dependency locking.
+# Manual edits can break the build and are not advised.
+# This file is expected to be part of source control.
+com.google.code.findbugs:jsr305:3.0.2=spotless865459188,spotless865482250
+com.google.errorprone:error_prone_annotations:2.21.1=spotless865459188,spotless865482250
+com.google.googlejavaformat:google-java-format:1.19.2=spotless865459188
+com.google.googlejavaformat:google-java-format:1.22.0=spotless865482250
+com.google.guava:failureaccess:1.0.1=spotless865459188,spotless865482250
+com.google.guava:guava:32.1.3-jre=spotless865459188,spotless865482250
+com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava=spotless865459188,spotless865482250
+com.tngtech.archunit:archunit-junit5-api:1.3.0=architectureTestCompileClasspath,architectureTestRuntimeClasspath
+com.tngtech.archunit:archunit-junit5-engine-api:1.3.0=architectureTestRuntimeClasspath
+com.tngtech.archunit:archunit-junit5-engine:1.3.0=architectureTestRuntimeClasspath
+com.tngtech.archunit:archunit-junit5:1.3.0=architectureTestCompileClasspath,architectureTestRuntimeClasspath
+com.tngtech.archunit:archunit:1.3.0=architectureTestCompileClasspath,architectureTestRuntimeClasspath
+io.elasticlake:elasticlake-architecture-rules:0.1.0-SNAPSHOT=architectureTestCompileClasspath,architectureTestRuntimeClasspath
+io.elasticlake:elasticlake-client-api:0.1.0-SNAPSHOT=architectureTestCompileClasspath,architectureTestRuntimeClasspath,compileClasspath,testCompileClasspath,testRuntimeClasspath
+net.jqwik:jqwik-api:1.8.4=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+net.jqwik:jqwik-engine:1.8.4=architectureTestRuntimeClasspath,testRuntimeClasspath
+net.jqwik:jqwik-time:1.8.4=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+net.jqwik:jqwik-web:1.8.4=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+net.jqwik:jqwik:1.8.4=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.apiguardian:apiguardian-api:1.1.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.checkerframework:checker-qual:3.37.0=spotless865459188,spotless865482250
+org.junit.jupiter:junit-jupiter-api:5.10.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.junit.jupiter:junit-jupiter-engine:5.10.2=architectureTestRuntimeClasspath,testRuntimeClasspath
+org.junit.jupiter:junit-jupiter-params:5.10.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.junit.jupiter:junit-jupiter:5.10.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.junit.platform:junit-platform-commons:1.10.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.junit.platform:junit-platform-engine:1.10.2=architectureTestRuntimeClasspath,testRuntimeClasspath
+org.junit.platform:junit-platform-launcher:1.10.2=architectureTestRuntimeClasspath,testRuntimeClasspath
+org.junit:junit-bom:5.10.2=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.opentest4j:opentest4j:1.3.0=architectureTestCompileClasspath,architectureTestRuntimeClasspath,testCompileClasspath,testRuntimeClasspath
+org.slf4j:slf4j-api:2.0.12=architectureTestCompileClasspath
+org.slf4j:slf4j-api:2.0.13=architectureTestRuntimeClasspath
+empty=annotationProcessor,architectureTestAnnotationProcessor,runtimeClasspath,testAnnotationProcessor

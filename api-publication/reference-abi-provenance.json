@@ -1,0 +1,15 @@
+{
+  "scope": "reference-ABI-oracle-only-not-product-generated",
+  "referenceSource": "ELK/docs/specs/contracts/connector-v3/ConnectorApi.java",
+  "referenceSourceSha256": "f5c28907a0612d408cd1f301a16aa4e43e248c60b79013176f3d2b29178bc447",
+  "referenceClassRoot": "ELK/build/csn-i-connector-contract-review-20261028/build/classes/java/main",
+  "referenceArchive": "ELK/build/csn-i-connector-contract-review-20261028/build/evidence/reference-linkage01/archive.json",
+  "referenceArchiveSha256": "10624529f286558062716a66666524af582bec16d5d07c16bac4d8a0cf793726",
+  "generator": "api-consumer-tests/src/main/java/io/elasticlake/consumer/StrictAbi.java",
+  "generatorSha256": "eafff787c7ae1ad2cb6f462588d34aeb657fde87ac056f61b484e573c426cf85",
+  "command": "javac --release 17 StrictAbi.java; java -cp generator-classes;original-reference-classes;accepted-sdk-jar io.elasticlake.consumer.StrictAbi",
+  "java": "17.0.21.0.2+1-LTS",
+  "sdkJarSha256": "320fc2ee47c2e002c406df96815d6f53b1a592a2cff2a06212fe6cdfe0b79c11",
+  "outputLines": 484,
+  "outputSha256": "f51c19c10f533f450d99ca36370bfde28b7f1a4f71d7c318f8a3a2e94bcfee82"
+}
