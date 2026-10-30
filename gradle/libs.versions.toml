@@ -1,7 +1,7 @@
 [versions]
 flink = "1.20.3"
 junit = "5.10.2"
-jqwik = "1.8.4"
+jqwik = "1.10.2"
 spotless = "6.25.0"
 google-java-format = "1.22.0"
 ktlint = "1.2.1"
