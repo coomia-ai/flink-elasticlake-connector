@@ -6,6 +6,13 @@ This is an independent Connector repository. Read [README.md](README.md),
 For build or SDK artifact work also read [the Connector foundation record](docs/development/csn-i/I-06.md).
 Foundation fixtures are explicitly non-product code; they do not approve Connector API/runtime behavior.
 
+## 上游需求与工作区导航
+
+两个项目的需求统一维护在 `elasticlake` 仓库，本仓库保留自身开发与验证文档，不另建需求事实源。
+本地双仓库布局下，先查 [跨仓库正式导航](../elasticlake/docs/development/workspace-navigation.md)和 [当前执行路线](../elasticlake/docs/CURRENT-ROUTE.md)，再从上游 [需求索引](../elasticlake/docs/requirements/README.md)、[SPEC 索引](../elasticlake/docs/specs/README.md)定位任务正文、阻塞评审和任务卡。
+上述相对路径仅用于本地文档导航，不构成构建依赖。单独 checkout 本仓库时，按 [design-baseline.json](docs/development/design-baseline.json)定位上游设计来源并获取当前任务材料；初始化 hash 仅供追溯，不代表当前授权。
+材料缺失时明确报告，不猜测合同或推进依赖这些材料的行为开发。本节不改变下方独立构建与阶段门禁规则。
+
 ## Scope and Authority
 
 - The current repository has a logical API implementation; Sink runtime is pending. Do not implement or claim an approved Sink,
